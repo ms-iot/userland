@@ -57,6 +57,10 @@ void vcos_abort(void)
 {
    VCOS_ALERT("vcos_abort: Halting");
 
+#ifdef WIN32
+   __debugbreak();
+#endif
+
 #ifdef __VIDEOCORE__
    _bkpt();
 #endif
@@ -80,6 +84,8 @@ void vcos_abort(void)
 #if defined __VIDEOCORE__ && !defined(NDEBUG)
    while(1); /* allow us to attach a debugger after the fact and see where we came from. */
 #else
+#ifndef WIN32_KERN
    abort(); /* on vc this ends up in _exit_halt which doesn't give us any stack backtrace */
+#endif
 #endif
 }

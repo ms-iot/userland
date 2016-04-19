@@ -77,7 +77,7 @@ VC_CONTAINER_STATUS_T vc_container_writer_extraio_create_temp(VC_CONTAINER_T *co
 VC_CONTAINER_STATUS_T vc_container_writer_extraio_delete(VC_CONTAINER_T *context, VC_CONTAINER_WRITER_EXTRAIO_T *extraio)
 {
    VC_CONTAINER_STATUS_T status;
-   char *uri = extraio->temp ? strdup(extraio->io->uri) : 0;
+   char *uri = extraio->temp ? _strdup(extraio->io->uri) : 0;
 
    while(extraio->refcount) vc_container_writer_extraio_disable(context, extraio);
    status = vc_container_io_close( extraio->io );

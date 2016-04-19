@@ -28,7 +28,47 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VCHIQ_IOCTLS_H
 #define VCHIQ_IOCTLS_H
 
+#ifdef WIN32
+
+#ifdef WIN32_KERN
+#include <ntddk.h>
+#include <wdf.h>
+#include <ntstrsafe.h>
+#include <wdm.h>
+#include <Ntstrsafe.h>
+#else
+#include <Windows.h>
+#endif
+
+#define FILE_DEVICE_VCHIQ          2835
+#define VCHIQ_NAME "VCHIQ"
+#define VCHIQ_NAME_W L"VCHIQ"
+#define VCHIQ_SYMBOLIC_NAME "\\DosDevices\\" VCHIQ_NAME
+#define VCHIQ_SYMBOLIC_NAME_W L"\\DosDevices\\" VCHIQ_NAME_W
+#define VCHIQ_USERMODE_PATH "\\\\.\\" VCHIQ_NAME
+#define VCHIQ_USERMODE_PATH_W L"\\\\.\\" VCHIQ_NAME_W
+
+#ifdef _IO
+#undef _IO
+#endif
+#define _IO(a, b) \
+    CTL_CODE(FILE_DEVICE_VCHIQ, b, METHOD_BUFFERED , FILE_ANY_ACCESS)
+
+#ifdef _IOW
+#undef _IOW
+#endif
+#define _IOW(a, b, c) \
+    CTL_CODE(FILE_DEVICE_VCHIQ, b, METHOD_OUT_DIRECT , FILE_ANY_ACCESS)
+
+#ifdef _IOWR
+#undef _IOR
+#endif
+#define _IOWR(a, b, c) \
+    CTL_CODE(FILE_DEVICE_VCHIQ, b, METHOD_IN_DIRECT , FILE_ANY_ACCESS)
+
+#else
 #include <linux/ioctl.h>
+#endif
 #include "vchiq_if.h"
 
 #define VCHIQ_IOC_MAGIC 0xc4
@@ -45,6 +85,11 @@ typedef struct {
    unsigned int handle;
    unsigned int count;
    const VCHIQ_ELEMENT_T *elements;
+   // For windows we require additional memory
+   // handle so driver can access user mode pointer
+#ifdef WIN32
+   void *driver_element_handle;
+#endif
 } VCHIQ_QUEUE_MESSAGE_T;
 
 typedef struct {
@@ -53,6 +98,11 @@ typedef struct {
    unsigned int size;
    void *userdata;
    VCHIQ_BULK_MODE_T mode;
+   // For windows we require additional memory
+   // handle so driver can access user mode pointer
+#ifdef WIN32
+   void *driver_buffer_handle;
+#endif
 } VCHIQ_QUEUE_BULK_TRANSFER_T;
 
 typedef struct {
@@ -60,6 +110,11 @@ typedef struct {
    VCHIQ_HEADER_T *header;
    void *service_userdata;
    void *bulk_userdata;
+   // For windows we require additional memory
+   // handle so driver can access user mode pointer
+#ifdef WIN32
+   void *driver_buffer_handle;
+#endif
 } VCHIQ_COMPLETION_DATA_T;
 
 typedef struct {
@@ -68,6 +123,11 @@ typedef struct {
    unsigned int msgbufsize;
    unsigned int msgbufcount; /* IN/OUT */
    void **msgbufs;
+   // For windows we require additional memory
+   // handle so driver can access user mode pointer
+#ifdef WIN32
+   void *driver_completion_handle;
+#endif
 } VCHIQ_AWAIT_COMPLETION_T;
 
 typedef struct {
@@ -75,11 +135,17 @@ typedef struct {
    int blocking;
    unsigned int bufsize;
    void *buf;
+#ifdef WIN32
+   void *driver_buffer_handle;
+#endif
 } VCHIQ_DEQUEUE_MESSAGE_T;
 
 typedef struct {
    unsigned int config_size;
    VCHIQ_CONFIG_T *pconfig;
+#ifdef WIN32
+   void *driver_config_handle;
+#endif
 } VCHIQ_GET_CONFIG_T;
 
 typedef struct {
@@ -99,7 +165,12 @@ typedef struct {
 #define VCHIQ_IOC_REMOVE_SERVICE       _IO(VCHIQ_IOC_MAGIC,   3)
 #define VCHIQ_IOC_QUEUE_MESSAGE        _IOW(VCHIQ_IOC_MAGIC,  4, VCHIQ_QUEUE_MESSAGE_T)
 #define VCHIQ_IOC_QUEUE_BULK_TRANSMIT  _IOWR(VCHIQ_IOC_MAGIC, 5, VCHIQ_QUEUE_BULK_TRANSFER_T)
+#ifdef WIN32
+// Used buffer memory for Windows for better memory alignment
+#define VCHIQ_IOC_QUEUE_BULK_RECEIVE   _IO(VCHIQ_IOC_MAGIC, 6)
+#else
 #define VCHIQ_IOC_QUEUE_BULK_RECEIVE   _IOWR(VCHIQ_IOC_MAGIC, 6, VCHIQ_QUEUE_BULK_TRANSFER_T)
+#endif
 #define VCHIQ_IOC_AWAIT_COMPLETION     _IOWR(VCHIQ_IOC_MAGIC, 7, VCHIQ_AWAIT_COMPLETION_T)
 #define VCHIQ_IOC_DEQUEUE_MESSAGE      _IOWR(VCHIQ_IOC_MAGIC, 8, VCHIQ_DEQUEUE_MESSAGE_T)
 #define VCHIQ_IOC_GET_CLIENT_ID        _IO(VCHIQ_IOC_MAGIC,   9)

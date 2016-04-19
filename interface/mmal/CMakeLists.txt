@@ -1,18 +1,32 @@
 # We support building both static and shared libraries
-if (NOT DEFINED LIBRARY_TYPE)
+if(NOT DEFINED LIBRARY_TYPE)
 set(LIBRARY_TYPE SHARED)
-endif (NOT DEFINED LIBRARY_TYPE)
+endif(NOT DEFINED LIBRARY_TYPE)
 
-add_definitions(-Wall -Werror)
+if(WIN32)
+    add_definitions(-Wall)
+else()
+    add_definitions(-Wall -Werror)
+endif()
 
 add_library(mmal SHARED util/mmal_util.c)
 
-add_subdirectory(core)
-add_subdirectory(util)
-add_subdirectory(vc)
-add_subdirectory(components)
-add_subdirectory(openmaxil)
-add_subdirectory(client)
+if(WIN32)
+    # TODO : Port more project to windows
+    add_subdirectory(core)
+    add_subdirectory(util)
+    add_subdirectory(vc)
+    add_subdirectory(components)
+    #add_subdirectory(openmaxil)
+    add_subdirectory(client)
+else()
+    add_subdirectory(core)
+    add_subdirectory(util)
+    add_subdirectory(vc)
+    add_subdirectory(components)
+    add_subdirectory(openmaxil)
+    add_subdirectory(client)
+endif()
 
 target_link_libraries(mmal mmal_core mmal_util mmal_vc_client vcos mmal_components)
 

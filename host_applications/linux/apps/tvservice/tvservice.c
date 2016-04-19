@@ -47,14 +47,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // ---- Private Constants and Types -----------------------------------------
 
-// Logging macros (for remapping to other logging mechanisms, i.e., vcos_log)
-#define LOG_ERR(  fmt, arg... )  fprintf( stderr, "[E] " fmt "\n", ##arg )
-#define LOG_WARN( fmt, arg... )  fprintf( stderr, "[W] " fmt "\n", ##arg )
-#define LOG_INFO( fmt, arg... )  fprintf( stderr, "[I] " fmt "\n", ##arg )
-#define LOG_DBG(  fmt, arg... )  fprintf( stdout, "[D] " fmt "\n", ##arg )
+#ifdef WIN32
+    // Logging macros (for remapping to other logging mechanisms, i.e., vcos_log)
+    #define LOG_ERR(  fmt, ... )  fprintf( stderr, "[E] " fmt "\n", ##__VA_ARGS__ )
+    #define LOG_WARN( fmt, ... )  fprintf( stderr, "[W] " fmt "\n", ##__VA_ARGS__ )
+    #define LOG_INFO( fmt, ... )  fprintf( stderr, "[I] " fmt "\n", ##__VA_ARGS__ )
+    #define LOG_DBG(  fmt, ... )  fprintf( stdout, "[D] " fmt "\n", ##__VA_ARGS__ )
 
-// Standard output log (for printing normal information to users)
-#define LOG_STD(  fmt, arg... )  fprintf( stdout, fmt "\n", ##arg )
+    // Standard output log (for printing normal information to users)
+    #define LOG_STD(  fmt, ... )  fprintf( stdout, fmt "\n", ##__VA_ARGS__ )
+#else
+    // Logging macros (for remapping to other logging mechanisms, i.e., vcos_log)
+    #define LOG_ERR(  fmt, arg... )  fprintf( stderr, "[E] " fmt "\n", ##arg )
+    #define LOG_WARN( fmt, arg... )  fprintf( stderr, "[W] " fmt "\n", ##arg )
+    #define LOG_INFO( fmt, arg... )  fprintf( stderr, "[I] " fmt "\n", ##arg )
+    #define LOG_DBG(  fmt, arg... )  fprintf( stdout, "[D] " fmt "\n", ##arg )
+
+    // Standard output log (for printing normal information to users)
+    #define LOG_STD(  fmt, arg... )  fprintf( stdout, fmt "\n", ##arg )
+#endif
 
 // Maximum length of option string (3 characters max for each option + NULL)
 #define OPTSTRING_LEN  ( sizeof( long_opts ) / sizeof( *long_opts ) * 3 + 1 )

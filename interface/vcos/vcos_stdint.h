@@ -97,7 +97,9 @@ typedef struct { uint32_t a; uint32_t b; } uint64_t;
 
 #else
 
+#ifndef WIN32_KERN
 #include <stdint.h>
+#endif
 
 #endif
 

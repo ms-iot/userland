@@ -54,6 +54,10 @@ include_directories (${VIDEOCORE_ROOT} ${VCOS_HEADERS_BUILD_DIR})
 
 add_subdirectory (${RTOS})
 
+if (WIN32)
+   add_subdirectory (getopt)
+endif ()
+
 set(VCOS_EXCLUDE_TESTS TRUE)
 if (NOT DEFINED VCOS_EXCLUDE_TESTS)
 add_testapp_subdirectory (test)
@@ -62,7 +66,8 @@ endif (NOT DEFINED VCOS_EXCLUDE_TESTS)
 if (WIN32)
    build_command (RELEASE_BUILD_CMD CONFIGURATION Release)
    build_command (DEBUG_BUILD_CMD CONFIGURATION Debug)
-   configure_file (build_all.bat.in build_all.bat @ONLY)
+   # This file does not exist in the original userland repo
+   # configure_file (build_all.bat.in build_all.bat @ONLY)
 endif ()
 
 #install (FILES ${HEADERS} DESTINATION include/interface/vcos)

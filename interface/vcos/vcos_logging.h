@@ -265,7 +265,11 @@ void vcos_log_dump_mem_impl( const VCOS_LOG_CAT_T *cat,
 
 #  if !defined(AMPUTATE_ALL_VCOS_LOGGING) && (!defined(NDEBUG) || defined(VCOS_ALWAYS_WANT_LOGGING))
 #   define VCOS_LOGGING_ENABLED
-#   define _VCOS_LOG_X(cat, _level, fmt,...) do { if (vcos_is_log_enabled(cat,_level)) vcos_log_impl(cat, _level, fmt, __VA_ARGS__); } while (0)
+#   define _VCOS_LOG_X(cat, _level, fmt,...) \
+        __pragma (warning(push)) \
+        __pragma (warning(disable:4127)) \
+        do { if (vcos_is_log_enabled(cat, _level)) vcos_log_impl(cat, _level, fmt, __VA_ARGS__); } while (0) \
+        __pragma (warning(pop))
 #  else
 #   define _VCOS_LOG_X(cat, _level, fmt,...) (void)0
 #  endif
@@ -281,6 +285,7 @@ void vcos_log_dump_mem_impl( const VCOS_LOG_CAT_T *cat,
 # define vcos_logc_trace(cat,fmt,...)   _VCOS_LOG_X(cat, VCOS_LOG_TRACE, fmt, __VA_ARGS__)
 
 # define vcos_log(fmt,...)   _VCOS_LOG_X(VCOS_LOG_DFLT_CATEGORY, VCOS_LOG_INFO, fmt, __VA_ARGS__)
+# define vcos_vlog(fmt,...)  _VCOS_LOG_X(VCOS_LOG_DFLT_CATEGORY, VCOS_LOG_INFO, fmt, __VA_ARGS__)
 # define VCOS_ALERT(fmt,...) _VCOS_LOG_X(VCOS_LOG_DFLT_CATEGORY, VCOS_LOG_ERROR, fmt, __VA_ARGS__)
 # define VCOS_TRACE(fmt,...) _VCOS_LOG_X(VCOS_LOG_DFLT_CATEGORY, VCOS_LOG_INFO, fmt, __VA_ARGS__)
 

@@ -121,7 +121,7 @@ typedef struct MMAL_PORT_T
  * @param port The port for which format changes are to be committed.
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_format_commit(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_format_commit(MMAL_PORT_T *port);
 
 /** Definition of the callback used by a port to send a \ref MMAL_BUFFER_HEADER_T
  * back to the user.
@@ -149,7 +149,7 @@ typedef void (*MMAL_PORT_BH_CB_T)(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffe
  * @param cb callback use by the port to send a \ref MMAL_BUFFER_HEADER_T back
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_enable(MMAL_PORT_T *port, MMAL_PORT_BH_CB_T cb);
+MMALPRE MMAL_STATUS_T mmal_port_enable(MMAL_PORT_T *port, MMAL_PORT_BH_CB_T cb);
 
 /** Disable processing on a port
  *
@@ -162,7 +162,7 @@ MMAL_STATUS_T mmal_port_enable(MMAL_PORT_T *port, MMAL_PORT_BH_CB_T cb);
  * @param port port to disable
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_disable(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_disable(MMAL_PORT_T *port);
 
 /** Ask a port to release all the buffer headers it currently has.
  *
@@ -179,7 +179,7 @@ MMAL_STATUS_T mmal_port_disable(MMAL_PORT_T *port);
  * @param port The port to flush.
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_flush(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_flush(MMAL_PORT_T *port);
 
 /** Set a parameter on a port.
  *
@@ -187,7 +187,7 @@ MMAL_STATUS_T mmal_port_flush(MMAL_PORT_T *port);
  * @param param The pointer to the header of the parameter to set.
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_parameter_set(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_parameter_set(MMAL_PORT_T *port,
    const MMAL_PARAMETER_HEADER_T *param);
 
 /** Get a parameter from a port.
@@ -204,7 +204,7 @@ MMAL_STATUS_T mmal_port_parameter_set(MMAL_PORT_T *port,
  * @param param The pointer to the header of the parameter to get.
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_parameter_get(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_parameter_get(MMAL_PORT_T *port,
    MMAL_PARAMETER_HEADER_T *param);
 
 /** Send a buffer header to a port.
@@ -213,7 +213,7 @@ MMAL_STATUS_T mmal_port_parameter_get(MMAL_PORT_T *port,
  * @param buffer The buffer header to send.
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_send_buffer(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_send_buffer(MMAL_PORT_T *port,
    MMAL_BUFFER_HEADER_T *buffer);
 
 /** Connect an output port to an input port.
@@ -231,7 +231,7 @@ MMAL_STATUS_T mmal_port_send_buffer(MMAL_PORT_T *port,
  * @param other_port The other port to connect.
  * @return MMAL_SUCCESS on success.
  */
-MMAL_STATUS_T mmal_port_connect(MMAL_PORT_T *port, MMAL_PORT_T *other_port);
+MMALPRE MMAL_STATUS_T mmal_port_connect(MMAL_PORT_T *port, MMAL_PORT_T *other_port);
 
 /** Disconnect a connected port.
  *
@@ -242,7 +242,7 @@ MMAL_STATUS_T mmal_port_connect(MMAL_PORT_T *port, MMAL_PORT_T *other_port);
  * @param port The ports to disconnect.
  * @return MMAL_SUCCESS on success.
  */
-MMAL_STATUS_T mmal_port_disconnect(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_disconnect(MMAL_PORT_T *port);
 
 /** Allocate a payload buffer.
  * This allows a client to allocate memory for a payload buffer based on the preferences
@@ -256,7 +256,7 @@ MMAL_STATUS_T mmal_port_disconnect(MMAL_PORT_T *port);
  *
  * @return Pointer to the allocated memory.
  */
-uint8_t *mmal_port_payload_alloc(MMAL_PORT_T *port, uint32_t payload_size);
+MMALPRE uint8_t *mmal_port_payload_alloc(MMAL_PORT_T *port, uint32_t payload_size);
 
 /** Free a payload buffer.
  * This allows a client to free memory allocated by a previous call to \ref mmal_port_payload_alloc.
@@ -266,7 +266,7 @@ uint8_t *mmal_port_payload_alloc(MMAL_PORT_T *port, uint32_t payload_size);
  * @param port         Port responsible for allocating the memory.
  * @param payload      Pointer to the memory to free.
  */
-void mmal_port_payload_free(MMAL_PORT_T *port, uint8_t *payload);
+MMALPRE void mmal_port_payload_free(MMAL_PORT_T *port, uint8_t *payload);
 
 /** Get an empty event buffer header from a port
  *
@@ -275,7 +275,7 @@ void mmal_port_payload_free(MMAL_PORT_T *port, uint8_t *payload);
  * @param event The specific event FourCC required. See the \ref MmalEvents "pre-defined events".
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_event_get(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T **buffer, uint32_t event);
+MMALPRE MMAL_STATUS_T mmal_port_event_get(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T **buffer, uint32_t event);
 
 /* @} */
 

@@ -9,11 +9,21 @@ add_definitions(-fno-strict-aliasing)
 
 include_directories(${VMCS_TARGET}/vcfiled)
 
-add_library(vchostif
-            ${VMCS_TARGET}/vcfilesys.c ${VMCS_TARGET}/vcmisc.c
-            vc_vchi_gencmd.c vc_vchi_filesys.c
+if(WIN32)     
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32DLL_EXPORTS -DVCOS_PROVIDER")
+    add_library(vchostif SHARED
+            vc_vchi_gencmd.c
             vc_vchi_tvservice.c vc_vchi_cecservice.c
             vc_vchi_dispmanx.c vc_service_common.c)
+else()
+    add_library(vchostif
+                ${VMCS_TARGET}/vcfilesys.c ${VMCS_TARGET}/vcmisc.c
+                vc_vchi_gencmd.c vc_vchi_filesys.c
+                vc_vchi_tvservice.c vc_vchi_cecservice.c
+                vc_vchi_dispmanx.c vc_service_common.c)
+endif()
+
+
 #            ${VMCS_TARGET}/vmcs_main.c
 #  vc_vchi_haud.c
 #add_library(bufman            vc_vchi_bufman.c            )
@@ -26,11 +36,20 @@ add_library(vcilcs
 target_link_libraries(vcilcs EGL GLESv2 khrn_client vchiq_arm vcos)
 
 # vchostif needs ilcore as well (vmcs_main pulls it in)
-target_link_libraries(vchostif vchiq_arm vcos vcfiled_check)
+if(WIN32)
+    target_link_libraries(vchostif vchiq_arm vcos)
+else()
+    target_link_libraries(vchostif vchiq_arm vcos vcfiled_check)
+endif()
 #bufman  vmcs_rpc_client
 
 #target_link_libraries(bufman WFC)
 
-add_subdirectory(linux/vcfiled)
+if(WIN32)
+    # TODO Determine if windows requires vcfiled
+else()
+    add_subdirectory(linux/vcfiled)
+endif()
+
 install(TARGETS vchostif vcilcs DESTINATION lib)
 

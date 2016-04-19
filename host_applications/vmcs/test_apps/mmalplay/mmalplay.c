@@ -86,7 +86,11 @@ int main(int argc, const char **argv)
       if (verbosity >= MMAL_COUNTOF(levels)) verbosity = MMAL_COUNTOF(levels) - 1;
       snprintf(value, sizeof(value)-1, "mmalplay:%s,mmal:%s,%s",
                levels[verbosity], levels[verbosity], env ? env : "");
+#ifdef WIN32
+      _putenv("VC_LOGLEVEL", value, 1);
+#else
       setenv("VC_LOGLEVEL", value, 1);
+#endif
    }
 
    vcos_log_register("mmalplay", VCOS_LOG_CATEGORY);
@@ -114,7 +118,11 @@ int main(int argc, const char **argv)
 
    if (sleepy_time != 0)
    {
+#ifdef WIN32
+      Sleep(sleepy_time);
+#else
       sleep(sleepy_time);
+#endif
       for (i = 0; i < play_info_count; i++)
       {
          vcos_mutex_lock(&play_info[i].lock);

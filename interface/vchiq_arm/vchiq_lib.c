@@ -25,10 +25,24 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef WIN32
+
+	#ifdef WIN32_KERN
+	#include <Ntifs.h>
+	#include <wdf.h>
+	#include <wdm.h>
+	#else
+	#include <Windows.h>
+	#include <fcntl.h>
+	#include <stdio.h>
+	#endif
+
+#else
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <stdio.h>
+#endif
 
 #include "vchiq.h"
 #include "vchiq_cfg.h"
@@ -41,7 +55,286 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define VCHIQ_MAX_INSTANCE_SERVICES 32
 #define MSGBUF_SIZE (VCHIQ_MAX_MSG_SIZE + sizeof(VCHIQ_HEADER_T))
 
+#ifdef WIN32
+
+int send_ioctl_sync(
+    HANDLE device,
+    DWORD ioctl_code,
+    LPVOID input_buffer,
+    DWORD input_buffer_size,
+    LPVOID output_buffer,
+    DWORD output_buffer_size,
+    LPDWORD bytes_returned
+    )
+{
+    OVERLAPPED overlapped = { 0 };
+
+    // TODO Figure if there is a way to include an event handle
+    // rather than allocating for every device io call
+    overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (overlapped.hEvent == NULL) {
+        return -1;
+    }
+
+    BOOL result = DeviceIoControl(
+        device,
+        ioctl_code,
+        input_buffer,
+        input_buffer_size,
+        output_buffer,
+        output_buffer_size,
+        bytes_returned,
+        &overlapped);
+
+    int last_error = GetLastError();
+    if ((result != FALSE) && (last_error != ERROR_IO_PENDING)) {
+        CloseHandle(overlapped.hEvent);
+        return -1;
+    }
+
+    DWORD waitRes = WaitForSingleObject(overlapped.hEvent, INFINITE); 
+
+    if (waitRes != WAIT_OBJECT_0) {
+        CloseHandle(overlapped.hEvent);
+        return -1;
+    }
+    
+    DWORD bytes_transfered;
+    if (!GetOverlappedResult(device, &overlapped, &bytes_transfered, TRUE)) {
+        CloseHandle(overlapped.hEvent);
+        return -1;
+    }
+
+    CloseHandle(overlapped.hEvent);
+    return 0;
+};
+
+int send_ioctl_buffer(
+    HANDLE device,
+    DWORD ioctl_code,
+    VOID* ioctl_buffer
+    )
+{
+    switch (ioctl_code)
+    {
+    case VCHIQ_IOC_CREATE_SERVICE:
+        {
+            return send_ioctl_sync(
+                device,
+                ioctl_code,
+                ioctl_buffer,
+                sizeof(VCHIQ_CREATE_SERVICE_T),
+                NULL,
+                0,
+                NULL);
+        }
+    case VCHIQ_IOC_QUEUE_MESSAGE:
+        {
+            return send_ioctl_sync(
+                device,
+                ioctl_code,
+                ioctl_buffer,
+                sizeof(VCHIQ_QUEUE_MESSAGE_T),
+                NULL,
+                0,
+                NULL);
+        }
+    case VCHIQ_IOC_QUEUE_BULK_TRANSMIT:
+        {
+            VCHIQ_QUEUE_BULK_TRANSFER_T* args = ioctl_buffer;
+
+            return send_ioctl_sync(
+                device,
+                ioctl_code,
+                args->data,
+                args->size,
+                args,
+                sizeof(VCHIQ_QUEUE_BULK_TRANSFER_T),
+                NULL);
+        }
+    case VCHIQ_IOC_QUEUE_BULK_RECEIVE:
+        {
+            VCHIQ_QUEUE_BULK_TRANSFER_T* args = ioctl_buffer;
+
+            return send_ioctl_sync(
+                device,
+                ioctl_code,
+                args,
+                sizeof(VCHIQ_QUEUE_BULK_TRANSFER_T),
+                args->data,
+                args->size,
+                NULL);
+        }
+    case VCHIQ_IOC_AWAIT_COMPLETION:
+        {
+            ULONG total_message = 0;
+
+            if (send_ioctl_sync(
+                device,
+                ioctl_code,
+                ioctl_buffer,
+                sizeof(VCHIQ_AWAIT_COMPLETION_T),
+                &total_message,
+                sizeof(total_message),
+                NULL) == 0) {
+                return total_message;
+            }
+            return 0;
+        }
+    case VCHIQ_IOC_GET_CONFIG:
+        {
+            return send_ioctl_sync(
+                device,
+                ioctl_code,
+                ioctl_buffer,
+                sizeof(VCHIQ_GET_CONFIG_T),
+                NULL,
+                0,
+                NULL);
+        }
+    case VCHIQ_IOC_SET_SERVICE_OPTION:
+        {
+            return send_ioctl_sync(
+                device,
+                ioctl_code,
+                ioctl_buffer,
+                sizeof(VCHIQ_SET_SERVICE_OPTION_T),
+                ioctl_buffer,
+                sizeof(VCHIQ_SET_SERVICE_OPTION_T),
+                NULL);
+        }
+    case VCHIQ_IOC_DUMP_PHYS_MEM:
+        {
+            return send_ioctl_sync(
+                device,
+                ioctl_code,
+                NULL,
+                0,
+                ioctl_buffer,
+                sizeof(VCHIQ_DUMP_MEM_T),
+                NULL);
+        }
+    case VCHIQ_IOC_DEQUEUE_MESSAGE:
+    {
+        // For VCHIQ_IOC_DEQUEUE_MESSAGE, megative value means error
+        int total_message = -1;
+
+        if (send_ioctl_sync(
+            device,
+            ioctl_code,
+            ioctl_buffer,
+            sizeof(VCHIQ_DEQUEUE_MESSAGE_T),
+            &total_message,
+            sizeof(total_message),
+            NULL) == 0) {
+            errno = EWOULDBLOCK;
+            return total_message;
+        }
+
+        if (GetLastError() == ERROR_NO_MORE_ITEMS) {
+            errno = EWOULDBLOCK;
+        } else {
+            errno = EWOULDBLOCK + 1;
+        }
+
+        return -1;
+    }
+    default:
+        // Return non-zero, for linux zero means success
+        return 1;
+    }
+};
+
+int send_ioctl_func (
+    HANDLE device,
+    DWORD ioctl_code,
+    ...
+    )
+{
+    int return_value;
+    va_list pl;
+
+    va_start (pl, ioctl_code);
+
+    switch (ioctl_code)
+    {
+    case VCHIQ_IOC_CONNECT:
+    case VCHIQ_IOC_SHUTDOWN:
+    case VCHIQ_IOC_REMOVE_SERVICE:
+    case VCHIQ_IOC_GET_CLIENT_ID:
+    case VCHIQ_IOC_CLOSE_SERVICE:
+    case VCHIQ_IOC_USE_SERVICE:
+    case VCHIQ_IOC_RELEASE_SERVICE:
+    case VCHIQ_IOC_LIB_VERSION:
+    case VCHIQ_IOC_CLOSE_DELIVERED:
+        {
+            unsigned int val;
+            OVERLAPPED overlapped = { 0 };
+
+            // TODO Figure if there is a way to include an event handle
+            // rather than allocating for every device io call
+            overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+            if (overlapped.hEvent == NULL) {
+                return -1;
+            }
+
+            val = va_arg(pl, unsigned int);
+
+            BOOL result = DeviceIoControl(
+                device,
+                ioctl_code,
+                &val,
+                sizeof(val),
+                NULL,
+                0,
+                NULL,
+                &overlapped);
+
+            int last_error = GetLastError();
+            if ((result != FALSE) && (last_error != ERROR_IO_PENDING)) {
+                CloseHandle(overlapped.hEvent);
+                return -1;
+            }
+
+            DWORD waitRes = WaitForSingleObject(overlapped.hEvent, INFINITE);
+            if (waitRes != WAIT_OBJECT_0) {
+                CloseHandle(overlapped.hEvent);
+                return -1;
+            }
+
+            DWORD bytes_transfered;
+            if (!GetOverlappedResult(device, &overlapped, &bytes_transfered, TRUE)) {
+                CloseHandle(overlapped.hEvent);
+                return -1;
+            }
+
+            CloseHandle(overlapped.hEvent);
+            return 0;
+            break;
+        }
+    default: 
+        {
+            void* val;
+
+            val = va_arg(pl, void*);
+
+            return_value =  send_ioctl_buffer(device, ioctl_code, val);
+            break;
+        }
+    }
+
+    va_end(pl);
+
+    return return_value;
+}
+
+// Call ioctl only once for Windows instead of retrying
+#define RETRY(r,x)  r = x
+#define ioctl(a, b ,c) send_ioctl_func(a, b, c)
+
+#else
 #define RETRY(r,x) do { r = x; } while ((r == -1) && (errno == EINTR))
+#endif
 
 #define VCOS_LOG_CATEGORY (&vchiq_lib_log_category)
 
@@ -50,19 +343,31 @@ typedef struct vchiq_service_struct
    VCHIQ_SERVICE_BASE_T base;
    VCHIQ_SERVICE_HANDLE_T handle;
    VCHIQ_SERVICE_HANDLE_T lib_handle;
+#ifdef WIN32
+   HANDLE fd;
+#else
    int fd;
+#endif
    VCHI_CALLBACK_T vchi_callback;
    void *peek_buf;
    int peek_size;
    int client_id;
+#ifdef WIN32
+   unsigned int is_client;
+#else
    char is_client;
+#endif
 } VCHIQ_SERVICE_T;
 
 typedef struct vchiq_service_struct VCHI_SERVICE_T;
 
 struct vchiq_instance_struct
 {
+#ifdef WIN32
+   HANDLE fd;
+#else
    int fd;
+#endif
    int initialised;
    int connected;
    int use_close_delivered;
@@ -186,9 +491,13 @@ vchiq_shutdown(VCHIQ_INSTANCE_T instance)
          vcos_thread_join(&instance->completion_thread, NULL);
          instance->connected = 0;
       }
-
-      close(instance->fd);
-      instance->fd = -1;
+      #ifdef WIN32
+        CloseHandle(instance->fd);
+        instance->fd = NULL;
+      #else
+        close(instance->fd);
+        instance->fd = -1;
+      #endif
    }
    else if (instance->initialised > 1)
    {
@@ -208,6 +517,8 @@ vchiq_shutdown(VCHIQ_INSTANCE_T instance)
    vcos_global_unlock();
 
    vcos_log_trace( "%s returning", __func__ );
+
+   vcos_log_unregister(&vchiq_lib_log_category);
 
    return VCHIQ_SUCCESS;
 }
@@ -434,6 +745,7 @@ vchiq_queue_bulk_receive(VCHIQ_SERVICE_HANDLE_T handle,
    args.size = size;
    args.userdata = userdata;
    args.mode = VCHIQ_BULK_MODE_CALLBACK;
+
    RETRY(ret, ioctl(service->fd, VCHIQ_IOC_QUEUE_BULK_RECEIVE, &args));
 
    return (ret >= 0) ? VCHIQ_SUCCESS : VCHIQ_ERROR;
@@ -913,7 +1225,7 @@ vchi_msg_dequeue( VCHI_SERVICE_HANDLE_T handle,
 
    if (service->peek_size >= 0)
    {
-      fprintf(stderr, "vchi_msg_dequeue -> using peek buffer\n");
+      vcos_log_error("vchi_msg_dequeue -> using peek buffer\n");
       if ((uint32_t)service->peek_size <= max_data_size_to_read)
       {
          memcpy(data, service->peek_buf, service->peek_size);
@@ -1165,8 +1477,8 @@ vchi_service_open( VCHI_INSTANCE_T instance_handle,
    memset(&params, 0, sizeof(params));
    params.fourcc = setup->service_id;
    params.userdata = setup->callback_param;
-   params.version = setup->version.version;
-   params.version_min = setup->version.version_min;
+   params.version = (short)setup->version.version;
+   params.version_min = (short)setup->version.version_min;
 
    status = create_service((VCHIQ_INSTANCE_T)instance_handle,
       &params,
@@ -1187,8 +1499,8 @@ vchi_service_create( VCHI_INSTANCE_T instance_handle,
    memset(&params, 0, sizeof(params));
    params.fourcc = setup->service_id;
    params.userdata = setup->callback_param;
-   params.version = setup->version.version;
-   params.version_min = setup->version.version_min;
+   params.version = (short)setup->version.version;
+   params.version_min = (short)setup->version.version_min;
 
    status = create_service((VCHIQ_INSTANCE_T)instance_handle,
       &params,
@@ -1425,8 +1737,28 @@ vchiq_lib_init(void)
 
    if (instance->initialised == 0)
    {
-      instance->fd = open("/dev/vchiq", O_RDWR);
+#ifdef WIN32
+       instance->fd = CreateFile(
+           (LPCSTR)VCHIQ_USERMODE_PATH,
+           GENERIC_WRITE | GENERIC_READ,
+           FILE_SHARE_READ | FILE_SHARE_WRITE,
+           NULL,
+           OPEN_EXISTING,
+           FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
+           NULL);
+       if (instance->fd == INVALID_HANDLE_VALUE) {
+           DWORD last_error = GetLastError();
+           vcos_log_error("Fail to open handle to vchiq %d", last_error);
+       }
+#else
+       instance->fd = open("/dev/vchiq", O_RDWR);
+#endif
+
+#ifdef WIN32
+      if (instance->fd != INVALID_HANDLE_VALUE)
+#else
       if (instance->fd >= 0)
+#endif
       {
          VCHIQ_GET_CONFIG_T args;
          VCHIQ_CONFIG_T config;
@@ -1459,7 +1791,11 @@ vchiq_lib_init(void)
             {
                vcos_log_error("Very incompatible VCHIQ library - cannot retrieve driver version");
             }
-            close(instance->fd);
+            #ifdef WIN32
+                CloseHandle(instance->fd);
+            #else
+                close(instance->fd);
+            #endif
             instance = NULL;
          }
       }
@@ -1516,7 +1852,7 @@ completion_thread(void *arg)
          }
          else
          {
-            fprintf(stderr, "vchiq_lib: failed to allocate a message buffer\n");
+            vcos_log_error("vchiq_lib: failed to allocate a message buffer\n");
             vcos_demand(args.msgbufcount != 0);
          }
       }
@@ -1734,7 +2070,7 @@ alloc_msgbuf(void)
       free_msgbufs = *(void **)msgbuf;
    vcos_mutex_unlock(&vchiq_lib_mutex);
    if (!msgbuf)
-      msgbuf = malloc(MSGBUF_SIZE);
+      msgbuf = vcos_malloc(MSGBUF_SIZE, "alloc_msgbuf");
    return msgbuf;
 }
 

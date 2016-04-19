@@ -46,14 +46,14 @@ typedef struct MMAL_QUEUE_T MMAL_QUEUE_T;
  *
  * @return Pointer to the newly created queue or NULL on failure.
  */
-MMAL_QUEUE_T *mmal_queue_create(void);
+MMALPRE MMAL_QUEUE_T *mmal_queue_create(void);
 
 /** Put a MMAL_BUFFER_HEADER_T into a queue
  *
  * @param queue  Pointer to a queue
  * @param buffer Pointer to the MMAL_BUFFER_HEADER_T to add to the queue
  */
-void mmal_queue_put(MMAL_QUEUE_T *queue, MMAL_BUFFER_HEADER_T *buffer);
+MMALPRE void mmal_queue_put(MMAL_QUEUE_T *queue, MMAL_BUFFER_HEADER_T *buffer);
 
 /** Put a MMAL_BUFFER_HEADER_T back at the start of a queue.
  * This is used when a buffer header was removed from the queue but not
@@ -62,7 +62,7 @@ void mmal_queue_put(MMAL_QUEUE_T *queue, MMAL_BUFFER_HEADER_T *buffer);
  * @param queue  Pointer to a queue
  * @param buffer Pointer to the MMAL_BUFFER_HEADER_T to add to the queue
  */
-void mmal_queue_put_back(MMAL_QUEUE_T *queue, MMAL_BUFFER_HEADER_T *buffer);
+MMALPRE void mmal_queue_put_back(MMAL_QUEUE_T *queue, MMAL_BUFFER_HEADER_T *buffer);
 
 /** Get a MMAL_BUFFER_HEADER_T from a queue
  *
@@ -70,7 +70,7 @@ void mmal_queue_put_back(MMAL_QUEUE_T *queue, MMAL_BUFFER_HEADER_T *buffer);
  *
  * @return pointer to the next MMAL_BUFFER_HEADER_T or NULL if the queue is empty.
  */
-MMAL_BUFFER_HEADER_T *mmal_queue_get(MMAL_QUEUE_T *queue);
+MMALPRE MMAL_BUFFER_HEADER_T *mmal_queue_get(MMAL_QUEUE_T *queue);
 
 /** Wait for a MMAL_BUFFER_HEADER_T from a queue.
  * This is the same as a get except that this will block until a buffer header is
@@ -80,7 +80,7 @@ MMAL_BUFFER_HEADER_T *mmal_queue_get(MMAL_QUEUE_T *queue);
  *
  * @return pointer to the next MMAL_BUFFER_HEADER_T.
  */
-MMAL_BUFFER_HEADER_T *mmal_queue_wait(MMAL_QUEUE_T *queue);
+MMALPRE MMAL_BUFFER_HEADER_T *mmal_queue_wait(MMAL_QUEUE_T *queue);
 
 /** Wait for a MMAL_BUFFER_HEADER_T from a queue, up to a given timeout.
  * This is the same as a wait, except that it will abort in case of timeout.
@@ -91,7 +91,7 @@ MMAL_BUFFER_HEADER_T *mmal_queue_wait(MMAL_QUEUE_T *queue);
  *
  * @return pointer to the next MMAL_BUFFER_HEADER_T.
  */
-MMAL_BUFFER_HEADER_T *mmal_queue_timedwait(MMAL_QUEUE_T *queue, VCOS_UNSIGNED timeout);
+MMALPRE MMAL_BUFFER_HEADER_T *mmal_queue_timedwait(MMAL_QUEUE_T *queue, VCOS_UNSIGNED timeout);
 
 /** Get the number of MMAL_BUFFER_HEADER_T currently in a queue.
  *
@@ -99,13 +99,13 @@ MMAL_BUFFER_HEADER_T *mmal_queue_timedwait(MMAL_QUEUE_T *queue, VCOS_UNSIGNED ti
  *
  * @return length (in elements) of the queue.
  */
-unsigned int mmal_queue_length(MMAL_QUEUE_T *queue);
+MMALPRE unsigned int mmal_queue_length(MMAL_QUEUE_T *queue);
 
 /** Destroy a queue of MMAL_BUFFER_HEADER_T.
  *
  * @param queue  Pointer to a queue
  */
-void mmal_queue_destroy(MMAL_QUEUE_T *queue);
+MMALPRE void mmal_queue_destroy(MMAL_QUEUE_T *queue);
 
 /* @} */
 

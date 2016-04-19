@@ -1,3 +1,4 @@
+
 add_library (mmal_core ${LIBRARY_TYPE}
    mmal_format.c
    mmal_port.c
@@ -11,7 +12,12 @@ add_library (mmal_core ${LIBRARY_TYPE}
    mmal_clock.c
 )
 
-target_link_libraries (mmal_core vcos)
+if(WIN32)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -DWIN32DLL_EXPORTS")
+    target_link_libraries (mmal_core mmal_util vcos)
+else()
+    target_link_libraries (mmal_core vcos)
+endif()
 
 install(TARGETS mmal_core DESTINATION lib)
 install(FILES

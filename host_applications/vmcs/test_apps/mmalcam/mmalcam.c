@@ -110,7 +110,11 @@ int main(int argc, const char **argv)
 
    if (sleepy_time != 0)
    {
+#ifdef WIN32
+      Sleep(sleepy_time);
+#else
       sleep(sleepy_time);
+#endif
       stop = 1;
    }
 

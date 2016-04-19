@@ -33,7 +33,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef VCOS_LOG_CATEGORY
 #define VCOS_LOG_CATEGORY (&mmal_log_category)
+
+#ifdef WIN32
+
+#ifdef WIN32DLL_EXPORTS
+#define WIN32DLL_API __declspec(dllexport)
+#else
+#define WIN32DLL_API __declspec(dllimport)
+#endif
+
+WIN32DLL_API VCOS_LOG_CAT_T mmal_log_category;
+
+#else
 extern VCOS_LOG_CAT_T mmal_log_category;
+#endif
+
 #endif
 
 #if defined(__GNUC__) && (( __GNUC__ > 2 ) || (( __GNUC__ == 2 ) && ( __GNUC_MINOR__ >= 3 )))

@@ -73,7 +73,7 @@ typedef enum
    VCHIQ_SERVICE_OPTION_TRACE
 } VCHIQ_SERVICE_OPTION_T;
 
-#ifdef __HIGHC__
+#if defined(__HIGHC__) || defined(WIN32)
 /* Allow zero-sized arrays without warnings */
 #pragma warning (push)
 #pragma warning (disable : 4200)
@@ -89,13 +89,18 @@ typedef struct vchiq_header_struct {
    char data[0];           /* message */
 } VCHIQ_HEADER_T;
 
-#ifdef __HIGHC__
+#if defined(__HIGHC__) || defined(WIN32)
 #pragma warning (pop)
 #endif
 
 typedef struct {
    const void *data;
    int size;
+   // For windows we require additional memory
+   // handle so driver can access user mode pointer
+#ifdef WIN32
+   void *driver_data_handle;
+#endif
 } VCHIQ_ELEMENT_T;
 
 typedef unsigned int VCHIQ_SERVICE_HANDLE_T;
@@ -130,61 +135,72 @@ typedef struct vchiq_config_struct {
 typedef struct vchiq_instance_struct *VCHIQ_INSTANCE_T;
 typedef void (*VCHIQ_REMOTE_USE_CALLBACK_T)(void* cb_arg);
 
+// OS abstraction
+#ifdef WIN32
+#ifdef WIN32DLL_EXPORTS
+#define WIN32DLL_VCHIQ_API __declspec(dllexport)
+#else
+#define WIN32DLL_VCHIQ_API __declspec(dllimport)
+#endif
+#define VCHIQPRE_ WIN32DLL_VCHIQ_API
+#else
+#define VCHIQPRE_ extern
+#endif
 
-extern VCHIQ_STATUS_T vchiq_initialise(VCHIQ_INSTANCE_T *pinstance);
-extern VCHIQ_STATUS_T vchiq_shutdown(VCHIQ_INSTANCE_T instance);
-extern VCHIQ_STATUS_T vchiq_connect(VCHIQ_INSTANCE_T instance);
-extern VCHIQ_STATUS_T vchiq_add_service(VCHIQ_INSTANCE_T instance,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_initialise(VCHIQ_INSTANCE_T *pinstance);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_shutdown(VCHIQ_INSTANCE_T instance);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_connect(VCHIQ_INSTANCE_T instance);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_add_service(VCHIQ_INSTANCE_T instance,
    const VCHIQ_SERVICE_PARAMS_T *params,
    VCHIQ_SERVICE_HANDLE_T *pservice);
-extern VCHIQ_STATUS_T vchiq_open_service(VCHIQ_INSTANCE_T instance,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_open_service(VCHIQ_INSTANCE_T instance,
    const VCHIQ_SERVICE_PARAMS_T *params,
    VCHIQ_SERVICE_HANDLE_T *pservice);
-extern VCHIQ_STATUS_T vchiq_close_service(VCHIQ_SERVICE_HANDLE_T service);
-extern VCHIQ_STATUS_T vchiq_remove_service(VCHIQ_SERVICE_HANDLE_T service);
-extern VCHIQ_STATUS_T vchiq_use_service(VCHIQ_SERVICE_HANDLE_T service);
-extern VCHIQ_STATUS_T vchiq_release_service(VCHIQ_SERVICE_HANDLE_T service);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_close_service(VCHIQ_SERVICE_HANDLE_T service);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_remove_service(VCHIQ_SERVICE_HANDLE_T service);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_use_service(const VCHIQ_SERVICE_HANDLE_T service);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_release_service(const VCHIQ_SERVICE_HANDLE_T service);
 
-extern VCHIQ_STATUS_T vchiq_queue_message(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_queue_message(VCHIQ_SERVICE_HANDLE_T service,
    const VCHIQ_ELEMENT_T *elements, int count);
-extern void           vchiq_release_message(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ void           vchiq_release_message(VCHIQ_SERVICE_HANDLE_T service,
    VCHIQ_HEADER_T *header);
-extern VCHIQ_STATUS_T vchiq_queue_bulk_transmit(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_queue_bulk_transmit(VCHIQ_SERVICE_HANDLE_T service,
    const void *data, int size, void *userdata);
-extern VCHIQ_STATUS_T vchiq_queue_bulk_receive(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_queue_bulk_receive(VCHIQ_SERVICE_HANDLE_T service,
    void *data, int size, void *userdata);
-extern VCHIQ_STATUS_T vchiq_queue_bulk_transmit_handle(
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_queue_bulk_transmit_handle(
    VCHIQ_SERVICE_HANDLE_T service, VCHI_MEM_HANDLE_T handle,
    const void *offset, int size, void *userdata);
-extern VCHIQ_STATUS_T vchiq_queue_bulk_receive_handle(
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_queue_bulk_receive_handle(
    VCHIQ_SERVICE_HANDLE_T service, VCHI_MEM_HANDLE_T handle,
    void *offset, int size, void *userdata);
-extern VCHIQ_STATUS_T vchiq_bulk_transmit(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_bulk_transmit(VCHIQ_SERVICE_HANDLE_T service,
    const void *data, int size, void *userdata, VCHIQ_BULK_MODE_T mode);
-extern VCHIQ_STATUS_T vchiq_bulk_receive(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_bulk_receive(VCHIQ_SERVICE_HANDLE_T service,
    void *data, int size, void *userdata, VCHIQ_BULK_MODE_T mode);
-extern VCHIQ_STATUS_T vchiq_bulk_transmit_handle(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_bulk_transmit_handle(VCHIQ_SERVICE_HANDLE_T service,
    VCHI_MEM_HANDLE_T handle, const void *offset, int size, void *userdata,
    VCHIQ_BULK_MODE_T mode);
-extern VCHIQ_STATUS_T vchiq_bulk_receive_handle(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_bulk_receive_handle(VCHIQ_SERVICE_HANDLE_T service,
    VCHI_MEM_HANDLE_T handle, void *offset, int size, void *userdata,
    VCHIQ_BULK_MODE_T mode, int (*copy_pagelist)());
-extern int   vchiq_get_client_id(VCHIQ_SERVICE_HANDLE_T service);
-extern void *vchiq_get_service_userdata(VCHIQ_SERVICE_HANDLE_T service);
-extern int   vchiq_get_service_fourcc(VCHIQ_SERVICE_HANDLE_T service);
-extern VCHIQ_STATUS_T vchiq_get_config(VCHIQ_INSTANCE_T instance,
+VCHIQPRE_ int   vchiq_get_client_id(VCHIQ_SERVICE_HANDLE_T service);
+VCHIQPRE_ void *vchiq_get_service_userdata(VCHIQ_SERVICE_HANDLE_T service);
+VCHIQPRE_ int   vchiq_get_service_fourcc(VCHIQ_SERVICE_HANDLE_T service);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_get_config(VCHIQ_INSTANCE_T instance,
    int config_size, VCHIQ_CONFIG_T *pconfig);
-extern VCHIQ_STATUS_T vchiq_set_service_option(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_set_service_option(VCHIQ_SERVICE_HANDLE_T service,
    VCHIQ_SERVICE_OPTION_T option, int value);
 
-extern VCHIQ_STATUS_T vchiq_remote_use(VCHIQ_INSTANCE_T instance,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_remote_use(VCHIQ_INSTANCE_T instance,
    VCHIQ_REMOTE_USE_CALLBACK_T callback, void *cb_arg);
-extern VCHIQ_STATUS_T vchiq_remote_release(VCHIQ_INSTANCE_T instance);
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_remote_release(VCHIQ_INSTANCE_T instance);
 
-extern VCHIQ_STATUS_T vchiq_dump_phys_mem(VCHIQ_SERVICE_HANDLE_T service,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_dump_phys_mem(VCHIQ_SERVICE_HANDLE_T service,
    void *ptr, size_t num_bytes);
 
-extern VCHIQ_STATUS_T vchiq_get_peer_version(VCHIQ_SERVICE_HANDLE_T handle,
+VCHIQPRE_ VCHIQ_STATUS_T vchiq_get_peer_version(VCHIQ_SERVICE_HANDLE_T handle,
       short *peer_version);
 
 #endif /* VCHIQ_IF_H */

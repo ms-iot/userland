@@ -52,7 +52,7 @@ extern "C" {
  *
  */
 
-VCOS_STATUS_T vcos_once(VCOS_ONCE_T *once_control,
+WIN32DLL_VCOS_API VCOS_STATUS_T vcos_once(VCOS_ONCE_T *once_control,
                         void (*init_routine)(void));
 
 #ifdef __cplusplus

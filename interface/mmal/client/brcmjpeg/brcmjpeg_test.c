@@ -26,7 +26,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "brcmjpeg.h"
+#ifdef WIN32
+#include <Windows.h>
+#else
 #include <sys/time.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -46,9 +50,24 @@ static char outFileName[2048];
 
 int64_t get_time_microsec(void)
 {
+#ifdef WIN32
+    static const uint64_t epoch = ((uint64_t)116444736000000000ULL);
+    FILETIME ft;
+    SYSTEMTIME st;
+    int64_t ct;
+
+    GetSystemTime(&st);              // Gets the current system time
+    SystemTimeToFileTime(&st, &ft);  // Converts the current system time to file time format
+    
+    ct = ((uint64_t)ft.dwLowDateTime);
+    ct += ((uint64_t)ft.dwHighDateTime) << 32; // ct value is in 100 us
+
+    return (long)((ct - epoch) / 10L); 
+#else
     struct timeval now;
     gettimeofday(&now, NULL);
     return now.tv_sec * 1000000LL + now.tv_usec;
+#endif
 }
 
 int main(int argc, char **argv)
@@ -161,7 +180,11 @@ int main(int argc, char **argv)
             fprintf(stderr, "could not open file %s\n", argv[i]);
             continue;
         }
+#ifdef WIN32
+        snprintf(outFileName, sizeof(outFileName), "%s.out.jpg", argv[i]);
+#else
         snprintf(outFileName, sizeof(outFileName), "%s.out", argv[i]);
+#endif
         FILE *file_out = fopen(outFileName, "wb+");
         if (!file_out) {
             fprintf(stderr, "could not open file %s\n", outFileName);

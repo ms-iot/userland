@@ -30,10 +30,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef GENCMD_H
 #define GENCMD_H
 
+#ifdef WIN32
+#include "interface/vcos/vcos.h"
+#else
 #include "vchost_config.h"
+#endif
 #include "interface/vchi/vchi.h"
 
-VCHPRE_ void VCHPOST_ vc_vchi_gencmd_init(VCHI_INSTANCE_T initialise_instance, VCHI_CONNECTION_T **connections, uint32_t num_connections );
+VCHPRE_ void VCHPOST_ vc_vchi_gencmd_init(VCHI_INSTANCE_T initialise_instnce, VCHI_CONNECTION_T **connections, uint32_t num_connections );
 
 
 /* Initialise general command service. Returns it's interface number. This initialises

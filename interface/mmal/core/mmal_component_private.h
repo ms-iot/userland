@@ -44,8 +44,18 @@ extern "C" {
 # define MMAL_CONSTRUCTOR(func) void __attribute__((constructor,used)) func(void)
 # define MMAL_DESTRUCTOR(func) void __attribute__((destructor,used)) func(void)
 #else
-# define MMAL_CONSTRUCTOR(func) void func(void)
-# define MMAL_DESTRUCTOR(func) void func(void)
+
+#ifdef WIN32
+    # define MMAL_CONSTRUCTOR(func) \
+        MMALPRE void func();
+
+    # define MMAL_DESTRUCTOR(func) \
+        MMALPRE void func();
+#else
+    # define MMAL_CONSTRUCTOR(func) void func(void)
+    # define MMAL_DESTRUCTOR(func) void func(void)
+#endif
+
 #endif
 
 #include "mmal.h"
@@ -81,7 +91,7 @@ struct MMAL_COMPONENT_PRIVATE_T
   * @param param        parameter to be set.
   * @return MMAL_SUCCESS or another status on error.
   */
-MMAL_STATUS_T mmal_component_parameter_set(MMAL_PORT_T *control_port,
+MMALPRE MMAL_STATUS_T mmal_component_parameter_set(MMAL_PORT_T *control_port,
                                            const MMAL_PARAMETER_HEADER_T *param);
 
 /** Get a generic component control parameter.
@@ -90,7 +100,7 @@ MMAL_STATUS_T mmal_component_parameter_set(MMAL_PORT_T *control_port,
   * @param param        parameter to be retrieved.
   * @return MMAL_SUCCESS or another status on error.
   */
-MMAL_STATUS_T mmal_component_parameter_get(MMAL_PORT_T *control_port,
+MMALPRE MMAL_STATUS_T mmal_component_parameter_get(MMAL_PORT_T *control_port,
                                            MMAL_PARAMETER_HEADER_T *param);
 
 /** Registers an action with the core.
@@ -102,7 +112,7 @@ MMAL_STATUS_T mmal_component_parameter_get(MMAL_PORT_T *control_port,
   * @param action       action to register.
   * @return MMAL_SUCCESS or another status on error.
   */
-MMAL_STATUS_T mmal_component_action_register(MMAL_COMPONENT_T *component,
+MMALPRE MMAL_STATUS_T mmal_component_action_register(MMAL_COMPONENT_T *component,
                                              void (*pf_action)(MMAL_COMPONENT_T *));
 
 /** De-registers the current action registered with the core.
@@ -110,7 +120,7 @@ MMAL_STATUS_T mmal_component_action_register(MMAL_COMPONENT_T *component,
   * @param component    component de-registering the action.
   * @return MMAL_SUCCESS or another status on error.
   */
-MMAL_STATUS_T mmal_component_action_deregister(MMAL_COMPONENT_T *component);
+MMALPRE MMAL_STATUS_T mmal_component_action_deregister(MMAL_COMPONENT_T *component);
 
 /** Triggers a registered action.
   * Explicitly triggers an action registered by a component.
@@ -118,7 +128,7 @@ MMAL_STATUS_T mmal_component_action_deregister(MMAL_COMPONENT_T *component);
   * @param component    component on which to trigger the action.
   * @return MMAL_SUCCESS or another status on error.
   */
-MMAL_STATUS_T mmal_component_action_trigger(MMAL_COMPONENT_T *component);
+MMALPRE MMAL_STATUS_T mmal_component_action_trigger(MMAL_COMPONENT_T *component);
 
 /** Lock an action to prevent it from running.
   * Allows a component to make sure no action is running while the lock is taken.
@@ -126,14 +136,14 @@ MMAL_STATUS_T mmal_component_action_trigger(MMAL_COMPONENT_T *component);
   * @param component    component.
   * @return MMAL_SUCCESS or another status on error.
   */
-MMAL_STATUS_T mmal_component_action_lock(MMAL_COMPONENT_T *component);
+MMALPRE MMAL_STATUS_T mmal_component_action_lock(MMAL_COMPONENT_T *component);
 
 /** Unlock an action to allow it to run again.
   *
   * @param component    component.
   * @return MMAL_SUCCESS or another status on error.
   */
-MMAL_STATUS_T mmal_component_action_unlock(MMAL_COMPONENT_T *component);
+MMALPRE MMAL_STATUS_T mmal_component_action_unlock(MMAL_COMPONENT_T *component);
 
 /** Prototype used by components to register themselves to the supplier. */
 typedef MMAL_STATUS_T (*MMAL_COMPONENT_SUPPLIER_FUNCTION_T)(const char *name,
@@ -149,7 +159,7 @@ typedef MMAL_STATUS_T (*MMAL_COMPONENT_SUPPLIER_FUNCTION_T)(const char *name,
  * @param component returned component
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_component_create_with_constructor(const char *name,
+MMALPRE MMAL_STATUS_T mmal_component_create_with_constructor(const char *name,
    MMAL_STATUS_T (*constructor)(const char *name, MMAL_COMPONENT_T *),
    struct MMAL_COMPONENT_MODULE_T *constructor_private,
    MMAL_COMPONENT_T **component);
@@ -159,7 +169,7 @@ MMAL_STATUS_T mmal_component_create_with_constructor(const char *name,
   * @param prefix     prefix for this supplier, e.g. "VC"
   * @param create_fn  function which will instantiate a component given a name.
   */
-void mmal_component_supplier_register(const char *prefix,
+MMALPRE void mmal_component_supplier_register(const char *prefix,
                                       MMAL_COMPONENT_SUPPLIER_FUNCTION_T create_fn);
 
 #ifdef __cplusplus

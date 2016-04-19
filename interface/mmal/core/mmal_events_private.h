@@ -41,14 +41,14 @@ extern "C" {
  * @param status the error status to be sent.
  * @return MMAL_SUCCESS or an error if the event could not be sent.
  */
-MMAL_STATUS_T mmal_event_error_send(MMAL_COMPONENT_T *component, MMAL_STATUS_T status);
+MMALPRE MMAL_STATUS_T mmal_event_error_send(MMAL_COMPONENT_T *component, MMAL_STATUS_T status);
 
 /** Send an eos event through a specific port.
  *
  * @param port port to receive the error event.
  * @return MMAL_SUCCESS or an error if the event could not be sent.
  */
-MMAL_STATUS_T mmal_event_eos_send(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_event_eos_send(MMAL_PORT_T *port);
 
 /** Forward an event onto an output port.
  * This will allocate a new event buffer on the output port, make a copy
@@ -58,7 +58,7 @@ MMAL_STATUS_T mmal_event_eos_send(MMAL_PORT_T *port);
  * @param port port to forward event to.
  * @return MMAL_SUCCESS or an error if the event could not be forwarded.
  */
-MMAL_STATUS_T mmal_event_forward(MMAL_BUFFER_HEADER_T *event, MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_event_forward(MMAL_BUFFER_HEADER_T *event, MMAL_PORT_T *port);
 
 #ifdef __cplusplus
 }

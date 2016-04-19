@@ -151,13 +151,13 @@ typedef struct MMAL_ES_FORMAT_T
  *
  * @return a \ref MMAL_ES_FORMAT_T structure
  */
-MMAL_ES_FORMAT_T *mmal_format_alloc(void);
+MMALPRE MMAL_ES_FORMAT_T *mmal_format_alloc(void);
 
 /** Free a \ref MMAL_ES_FORMAT_T structure allocated by \ref mmal_format_alloc.
  *
  * @param format the \ref MMAL_ES_FORMAT_T structure to free
  */
-void mmal_format_free(MMAL_ES_FORMAT_T *format);
+MMALPRE void mmal_format_free(MMAL_ES_FORMAT_T *format);
 
 /** Allocate the extradata buffer in \ref MMAL_ES_FORMAT_T.
  * This buffer will be freed automatically when the format is destroyed or
@@ -167,7 +167,7 @@ void mmal_format_free(MMAL_ES_FORMAT_T *format);
  * @param size size of the extradata buffer to allocate
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_format_extradata_alloc(MMAL_ES_FORMAT_T *format, unsigned int size);
+MMALPRE MMAL_STATUS_T mmal_format_extradata_alloc(MMAL_ES_FORMAT_T *format, unsigned int size);
 
 /** Shallow copy a format structure.
  * It is worth noting that the extradata buffer will not be copied in the new format.
@@ -175,7 +175,7 @@ MMAL_STATUS_T mmal_format_extradata_alloc(MMAL_ES_FORMAT_T *format, unsigned int
  * @param format_dest destination \ref MMAL_ES_FORMAT_T for the copy
  * @param format_src source \ref MMAL_ES_FORMAT_T for the copy
  */
-void mmal_format_copy(MMAL_ES_FORMAT_T *format_dest, MMAL_ES_FORMAT_T *format_src);
+MMALPRE void mmal_format_copy(MMAL_ES_FORMAT_T *format_dest, MMAL_ES_FORMAT_T *format_src);
 
 /** Fully copy a format structure, including the extradata buffer.
  *
@@ -183,7 +183,7 @@ void mmal_format_copy(MMAL_ES_FORMAT_T *format_dest, MMAL_ES_FORMAT_T *format_sr
  * @param format_src source \ref MMAL_ES_FORMAT_T for the copy
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_format_full_copy(MMAL_ES_FORMAT_T *format_dest, MMAL_ES_FORMAT_T *format_src);
+MMALPRE MMAL_STATUS_T mmal_format_full_copy(MMAL_ES_FORMAT_T *format_dest, MMAL_ES_FORMAT_T *format_src);
 
 /** \name Comparison flags
  * \anchor comparisonflags
@@ -212,7 +212,7 @@ MMAL_STATUS_T mmal_format_full_copy(MMAL_ES_FORMAT_T *format_dest, MMAL_ES_FORMA
  * @param format_2 second \ref MMAL_ES_FORMAT_T to compare
  * @return set of flags describing the differences
  */
-uint32_t mmal_format_compare(MMAL_ES_FORMAT_T *format_1, MMAL_ES_FORMAT_T *format_2);
+MMALPRE uint32_t mmal_format_compare(MMAL_ES_FORMAT_T *format_1, MMAL_ES_FORMAT_T *format_2);
 
 /* @} */
 

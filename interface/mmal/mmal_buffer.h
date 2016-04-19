@@ -159,14 +159,14 @@ typedef struct MMAL_BUFFER_HEADER_T
  *
  * @param header buffer header to acquire
  */
-void mmal_buffer_header_acquire(MMAL_BUFFER_HEADER_T *header);
+MMALPRE void mmal_buffer_header_acquire(MMAL_BUFFER_HEADER_T *header);
 
 /** Reset a buffer header.
  * Resets all header variables to default values.
  *
  * @param header buffer header to reset
  */
-void mmal_buffer_header_reset(MMAL_BUFFER_HEADER_T *header);
+MMALPRE void mmal_buffer_header_reset(MMAL_BUFFER_HEADER_T *header);
 
 /** Release a buffer header.
  * Releasing a buffer header will decrease its reference counter and when no more references
@@ -179,7 +179,7 @@ void mmal_buffer_header_reset(MMAL_BUFFER_HEADER_T *header);
  *
  * @param header buffer header to release
  */
-void mmal_buffer_header_release(MMAL_BUFFER_HEADER_T *header);
+MMALPRE void mmal_buffer_header_release(MMAL_BUFFER_HEADER_T *header);
 
 /** Continue the buffer header release process.
  * This should be called to complete buffer header recycling once all pre-release activity
@@ -187,7 +187,7 @@ void mmal_buffer_header_release(MMAL_BUFFER_HEADER_T *header);
  *
  * @param header buffer header to release
  */
-void mmal_buffer_header_release_continue(MMAL_BUFFER_HEADER_T *header);
+MMALPRE void mmal_buffer_header_release_continue(MMAL_BUFFER_HEADER_T *header);
 
 /** Buffer header pre-release callback.
  * The callback is invoked just before a buffer is released back into a
@@ -212,7 +212,7 @@ typedef MMAL_BOOL_T (*MMAL_BH_PRE_RELEASE_CB_T)(MMAL_BUFFER_HEADER_T *header, vo
  * @param cb       pre-release callback to invoke
  * @param userdata user-specific data
  */
-void mmal_buffer_header_pre_release_cb_set(MMAL_BUFFER_HEADER_T *header, MMAL_BH_PRE_RELEASE_CB_T cb, void *userdata);
+MMALPRE void mmal_buffer_header_pre_release_cb_set(MMAL_BUFFER_HEADER_T *header, MMAL_BH_PRE_RELEASE_CB_T cb, void *userdata);
 
 /** Replicate a buffer header into another one.
  * Replicating a buffer header will not only do an exact copy of all the public fields of the
@@ -223,7 +223,7 @@ void mmal_buffer_header_pre_release_cb_set(MMAL_BUFFER_HEADER_T *header, MMAL_BH
  * @param src buffer header to use as the source for the replication
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_buffer_header_replicate(MMAL_BUFFER_HEADER_T *dest, MMAL_BUFFER_HEADER_T *src);
+MMALPRE MMAL_STATUS_T mmal_buffer_header_replicate(MMAL_BUFFER_HEADER_T *dest, MMAL_BUFFER_HEADER_T *src);
 
 /** Lock the data buffer contained in the buffer header in memory.
  * This call does nothing on all platforms except VideoCore where it is needed to pin a
@@ -231,7 +231,7 @@ MMAL_STATUS_T mmal_buffer_header_replicate(MMAL_BUFFER_HEADER_T *dest, MMAL_BUFF
  *
  * @param header buffer header to lock
  */
-MMAL_STATUS_T mmal_buffer_header_mem_lock(MMAL_BUFFER_HEADER_T *header);
+MMALPRE MMAL_STATUS_T mmal_buffer_header_mem_lock(MMAL_BUFFER_HEADER_T *header);
 
 /** Unlock the data buffer contained in the buffer header.
  * This call does nothing on all platforms except VideoCore where it is needed to un-pin a
@@ -239,7 +239,7 @@ MMAL_STATUS_T mmal_buffer_header_mem_lock(MMAL_BUFFER_HEADER_T *header);
  *
  * @param header buffer header to unlock
  */
-void mmal_buffer_header_mem_unlock(MMAL_BUFFER_HEADER_T *header);
+MMALPRE void mmal_buffer_header_mem_unlock(MMAL_BUFFER_HEADER_T *header);
 
 /* @} */
 

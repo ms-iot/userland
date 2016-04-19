@@ -345,6 +345,11 @@ static VC_CONTAINER_READER_OPEN_FUNC_T load_library(void **handle, const char *n
    
    vc_container_assert(read == 0 || read == 1);
    
+#ifdef WIN32
+   dl_size = MAX(strlen(DL_PREFIX_RD), strlen(DL_PREFIX_WR)) + name_len + strlen(DL_SUFFIX) + 1;
+#else
+   dl_size = strlen(DL_PATH_PREFIX) + MAX(strlen(DL_PREFIX_RD), strlen(DL_PREFIX_WR)) + name_len + strlen(DL_SUFFIX) + 1;
+#endif
    dl_size = strlen(DL_PATH_PREFIX) + MAX(strlen(DL_PREFIX_RD), strlen(DL_PREFIX_WR)) + name_len + strlen(DL_SUFFIX) + 1;
    if ((dl_name = malloc(dl_size)) == NULL)
       return NULL;
@@ -356,7 +361,11 @@ static VC_CONTAINER_READER_OPEN_FUNC_T load_library(void **handle, const char *n
       return NULL;
    }
 
+#ifdef WIN32
+   snprintf(dl_name, dl_size, "%s%s%s%s", read ? DL_PREFIX_RD : DL_PREFIX_WR, ext ? ext : "", name, DL_SUFFIX);
+#else
    snprintf(dl_name, dl_size, "%s%s%s%s%s", DL_PATH_PREFIX, read ? DL_PREFIX_RD : DL_PREFIX_WR, ext ? ext : "", name, DL_SUFFIX);
+#endif
    snprintf(entrypt_name, ep_size, "%s_%s%s", name, ext ? ext : "", read ? entrypt_read : entrypt_write);
       
    if ( (dl_handle = vcos_dlopen(dl_name, VCOS_DL_NOW)) != NULL )

@@ -51,8 +51,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #ifdef _MSC_VER
-# define strcasecmp stricmp
-# define strncasecmp strnicmp
+# define strcasecmp _stricmp
+# define strncasecmp _strnicmp
 #endif
 
 #define STATIC_INLINE static __inline

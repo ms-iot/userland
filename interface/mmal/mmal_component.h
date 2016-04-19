@@ -94,7 +94,7 @@ typedef struct MMAL_COMPONENT_T
  * @param component returned component
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_component_create(const char *name,
+MMALPRE MMAL_STATUS_T mmal_component_create(const char *name,
                                     MMAL_COMPONENT_T **component);
 
 /** Acquire a reference on a component.
@@ -105,7 +105,7 @@ MMAL_STATUS_T mmal_component_create(const char *name,
  *
  * @param component component to acquire
  */
-void mmal_component_acquire(MMAL_COMPONENT_T *component);
+MMALPRE void mmal_component_acquire(MMAL_COMPONENT_T *component);
 
 /** Release a reference on a component
  * Release an acquired reference on a component. Triggers the destruction of the component when
@@ -116,7 +116,7 @@ void mmal_component_acquire(MMAL_COMPONENT_T *component);
  * @param component component to release
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_component_release(MMAL_COMPONENT_T *component);
+MMALPRE MMAL_STATUS_T mmal_component_release(MMAL_COMPONENT_T *component);
 
 /** Destroy a previously created component
  * Release an acquired reference on a component. Only actually destroys the component when
@@ -125,19 +125,19 @@ MMAL_STATUS_T mmal_component_release(MMAL_COMPONENT_T *component);
  * @param component component to destroy
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_component_destroy(MMAL_COMPONENT_T *component);
+MMALPRE MMAL_STATUS_T mmal_component_destroy(MMAL_COMPONENT_T *component);
 
 /** Enable processing on a component
  * @param component component to enable
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_component_enable(MMAL_COMPONENT_T *component);
+MMALPRE MMAL_STATUS_T mmal_component_enable(MMAL_COMPONENT_T *component);
 
 /** Disable processing on a component
  * @param component component to disable
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_component_disable(MMAL_COMPONENT_T *component);
+MMALPRE MMAL_STATUS_T mmal_component_disable(MMAL_COMPONENT_T *component);
 
 /* @} */
 

@@ -33,8 +33,15 @@ VideoCore OS Abstraction Layer - memory alloc implementation
 
 #ifndef _vcos_platform_malloc
 #include <stdlib.h>
-#define _vcos_platform_malloc malloc
-#define _vcos_platform_free   free
+
+	#ifdef WIN32_KERN
+	#define _vcos_platform_malloc(a) ExAllocatePoolWithTag(PagedPool, a, 'socv')
+	#define _vcos_platform_free   ExFreePool
+	#else
+	#define _vcos_platform_malloc malloc
+	#define _vcos_platform_free   free
+	#endif
+
 #endif
 
 typedef struct malloc_header_s {

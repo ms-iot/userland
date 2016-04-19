@@ -223,7 +223,7 @@ VCOS_STATUS_T vcos_generic_blockpool_create_on_heap(VCOS_BLOCKPOOL_T *pool,
    return status;
 
 fail:
-   free(mem);
+   vcos_free(mem);
    return status;
 }
 
@@ -365,8 +365,10 @@ void vcos_generic_blockpool_free(void *block)
       subpool->free_list = hdr;
       ++(subpool->available_blocks);
 
+#ifndef WIN32_KERN
       if (VCOS_BLOCKPOOL_OVERWRITE_ON_FREE)
          memset(block, 0xBD, pool->block_data_size); /* For debugging */
+#endif
 
       if ( (subpool->flags & VCOS_BLOCKPOOL_SUBPOOL_FLAG_EXTENSION) &&
             subpool->available_blocks == subpool->num_blocks)
@@ -457,8 +459,8 @@ void vcos_generic_blockpool_delete(VCOS_BLOCKPOOL_T *pool)
 
 uint32_t vcos_generic_blockpool_elem_to_handle(void *block)
 {
-   uint32_t ret = -1;
-   uint32_t index = -1;
+   uint32_t ret = (uint32_t)-1;
+   uint32_t index = (uint32_t)-1;
    VCOS_BLOCKPOOL_HEADER_T *hdr = NULL;
    VCOS_BLOCKPOOL_T *pool = NULL;
    VCOS_BLOCKPOOL_SUBPOOL_T *subpool = NULL;

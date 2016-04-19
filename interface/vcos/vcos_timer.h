@@ -76,7 +76,11 @@ VCOSPRE_ VCOS_STATUS_T VCOSPOST_ vcos_timer_init(void);
   * @param context   context passed to expiration routine
   *
   */
+#ifdef WIN32
+VCOSPRE_
+#else
 VCOS_INLINE_DECL
+#endif
 VCOS_STATUS_T vcos_timer_create(VCOS_TIMER_T *timer,
                                 const char *name,
                                 void (*expiration_routine)(void *context),
@@ -91,24 +95,40 @@ VCOS_STATUS_T vcos_timer_create(VCOS_TIMER_T *timer,
   * @param timer     timer handle
   * @param delay     Delay to wait for, in ms
   */
+#ifdef WIN32
+VCOSPRE_
+#else
 VCOS_INLINE_DECL
+#endif
 void vcos_timer_set(VCOS_TIMER_T *timer, VCOS_UNSIGNED delay);
 
 /** Stop an already running timer.
   *
   * @param timer     timer handle
   */
+#ifdef WIN32
+VCOSPRE_
+#else
 VCOS_INLINE_DECL
+#endif
 void vcos_timer_cancel(VCOS_TIMER_T *timer);
 
 /** Stop a timer and restart it.
   * @param timer     timer handle
   * @param delay     delay in ms
   */
+#ifdef WIN32
+VCOSPRE_
+#else
 VCOS_INLINE_DECL
+#endif
 void vcos_timer_reset(VCOS_TIMER_T *timer, VCOS_UNSIGNED delay);
 
+#ifdef WIN32
+VCOSPRE_
+#else
 VCOS_INLINE_DECL
+#endif
 void vcos_timer_delete(VCOS_TIMER_T *timer);
 
 #ifdef __cplusplus
