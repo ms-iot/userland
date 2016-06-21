@@ -737,6 +737,22 @@ typedef enum
  */
 VC_CONTAINER_STATUS_T vc_container_control( VC_CONTAINER_T *context, VC_CONTAINER_CONTROL_T operation, ... );
 
+#ifdef WIN32
+
+    #ifdef WIN32DLL_EXPORTS
+    #define WIN32DLL_API __declspec(dllexport)
+    #else
+    #define WIN32DLL_API __declspec(dllimport)
+    #endif
+
+#define VC_CONTAINER_PRE WIN32DLL_API
+
+#else
+
+#define VC_CONTAINER_PRE
+
+#endif
+
 /* @} */
 
 #ifdef __cplusplus

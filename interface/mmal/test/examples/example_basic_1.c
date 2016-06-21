@@ -94,7 +94,10 @@ int main(int argc, char **argv)
       return -1;
    }
 
+#ifndef WIN32
+   // TODO verify that we dont really need to call bcm_host_init
    bcm_host_init();
+#endif
 
    vcos_semaphore_create(&context.semaphore, "example", 1);
 

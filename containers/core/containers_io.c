@@ -585,7 +585,42 @@ static size_t vc_container_io_cache_read( VC_CONTAINER_IO_T *p_ctx,
 
       /* Read data directly from the cache */
       if(bytes > size) bytes = size;
+
+#ifdef WIN32
+      const size_t alignment = 0x04;
+      size_t extra_bytes = (read & (alignment - 1));
+
+      if (extra_bytes) {
+          size_t total_copy_bytes = alignment - extra_bytes;
+          uint32_t* temp_dest = (uint32_t*)(data + read - extra_bytes);
+          uint32_t temp_src = *((uint32_t*)(cache->buffer + cache->position));
+          
+          const uint32_t copy_mask[4] = {
+              0x00000000,
+              0x000000FF,
+              0x0000FFFF,
+              0x00FFFFFF
+          };
+
+          /* Copy data to unaligned address */
+          *(temp_dest) &= copy_mask[extra_bytes];
+          temp_src <<= (8 * extra_bytes);
+          *(temp_dest) |= temp_src;          
+
+          /* Use memcpy to copy remaining data */
+          size_t total_copy = bytes - total_copy_bytes;
+      
+          memcpy(
+              data + read + total_copy_bytes, 
+              cache->buffer + cache->position + total_copy_bytes, 
+              total_copy);
+      } else {
+          memcpy(data + read, cache->buffer + cache->position, bytes);
+      }
+#else
       memcpy(data + read, cache->buffer + cache->position, bytes);
+#endif
+
       cache->position += bytes;
       read += bytes;
       size -= bytes;

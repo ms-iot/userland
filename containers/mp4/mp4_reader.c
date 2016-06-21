@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef CONTAINER_HELPER_LOG_INDENT
 #define CONTAINER_HELPER_LOG_INDENT(a) (a)->priv->module->box_level
 
-VC_CONTAINER_STATUS_T mp4_reader_open( VC_CONTAINER_T *p_ctx );
+VC_CONTAINER_PRE VC_CONTAINER_STATUS_T mp4_reader_open( VC_CONTAINER_T *p_ctx );
 
 /******************************************************************************
 TODO:

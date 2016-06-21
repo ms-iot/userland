@@ -1,3 +1,9 @@
+if (WIN32)
+	# mmal_util is now a static library to avoid circular dependancy
+    set(LIBRARY_TYPE STATIC)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -D_TIME_T_DEFINED")
+endif ()
+
 add_library (mmal_util ${LIBRARY_TYPE}
    mmal_il.c
    mmal_util.c

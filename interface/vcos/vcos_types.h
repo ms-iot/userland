@@ -124,8 +124,12 @@ typedef enum
 # define VCOS_INLINE_DECL extern __inline__
 # define VCOS_INLINE_IMPL static __inline__
 #else
+#ifndef _VCOS_INLINE
 # define VCOS_INLINE_DECL static _VCOS_INLINE   /* declare a func */
+#endif
+#ifndef VCOS_INLINE_IMPL
 # define VCOS_INLINE_IMPL static _VCOS_INLINE   /* implement a func inline */
+#endif
 #endif
 
 # if defined(VCOS_WANT_IMPL)
@@ -155,14 +159,18 @@ typedef enum
 
 /** It seems that __FUNCTION__ isn't standard!
   */
-#if __STDC_VERSION__ < 199901L
-# if __GNUC__ >= 2 || defined(__VIDEOCORE__)
-#  define VCOS_FUNCTION __FUNCTION__
-# else
-#  define VCOS_FUNCTION "<unknown>"
-# endif
+#ifdef WIN32
+# define VCOS_FUNCTION __FUNCTION__
 #else
-# define VCOS_FUNCTION __func__
+# if __STDC_VERSION__ < 199901L
+#  if __GNUC__ >= 2 || defined(__VIDEOCORE__)
+#   define VCOS_FUNCTION __FUNCTION__
+#  else
+#   define VCOS_FUNCTION "<unknown>"
+#  endif
+# else
+#  define VCOS_FUNCTION __func__
+# endif
 #endif
 
 #define _VCOS_MS_PER_TICK (1000/VCOS_TICKS_PER_SECOND)

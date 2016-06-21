@@ -36,7 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #endif
 
+#ifdef WIN32
+
+#else
 #include <linux/ioctl.h>
+#endif
 
 /* ---- Constants and Types ---------------------------------------------- */
 
@@ -186,6 +190,39 @@ struct vmcs_sm_ioctl_clean_invalid {
 		unsigned int size;
 	} s[8];
 };
+
+#ifdef WIN32
+#include <Windows.h>
+
+#define FILE_DEVICE_VCSM          2836
+
+#ifdef _IO
+#undef _IO
+#endif
+#define _IO(a, b) \
+    CTL_CODE(FILE_DEVICE_VCSM, b, METHOD_BUFFERED , FILE_ANY_ACCESS)
+
+#ifdef _IOR
+#undef _IOR
+#endif
+#define _IOR(a, b, c) \
+    CTL_CODE(FILE_DEVICE_VCSM, b, METHOD_BUFFERED , FILE_ANY_ACCESS)
+
+// Windows specific IOCTL to map an unmap VC buffer to user mode
+#define VMCS_SM_IOCTL_MMAP\
+	_IO(VMCS_SM_MAGIC_TYPE, VMCS_SM_CMD_CLEAN_INVALID + 1)
+
+#define VMCS_SM_IOCTL_MUNMAP\
+	_IO(VMCS_SM_MAGIC_TYPE, VMCS_SM_CMD_CLEAN_INVALID + 2)
+
+struct vmcs_sm_mmap {
+
+    unsigned int res_handle;
+
+    unsigned int user_addr;
+};
+
+#endif
 
 /* IOCTL numbers */
 #define VMCS_SM_IOCTL_MEM_ALLOC\

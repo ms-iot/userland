@@ -202,7 +202,7 @@ typedef struct VC_CONTAINER_MODULE_T
 /******************************************************************************
 Function prototypes
 ******************************************************************************/
-VC_CONTAINER_STATUS_T asf_reader_open( VC_CONTAINER_T * );
+VC_CONTAINER_PRE VC_CONTAINER_STATUS_T asf_reader_open( VC_CONTAINER_T * );
 
 /******************************************************************************
 Prototypes for local functions

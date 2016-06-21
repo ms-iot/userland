@@ -92,7 +92,10 @@ VideoCore OS Abstraction Layer - compiler-specific attributes
 #if defined(__GNUC__) || defined(__HIGHC__)
 # define VCOS_ATTR_ALIGNED(n)  __attribute__ ((aligned(n)))
 #elif defined(_MSC_VER)
-# define VCOS_ATTR_ALIGNED(n)  __declspec(align(n))
+#ifdef VCOS_ATTR_ALIGNED
+#undef VCOS_ATTR_ALIGNED
+#define VCOS_ATTR_ALIGNED(n)  __declspec(align(n))
+#endif
 #else
 /* Force a syntax error if this is used when the compiler doesn't support it,
  * instead of silently misaligning */

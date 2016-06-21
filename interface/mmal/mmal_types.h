@@ -91,6 +91,23 @@ typedef struct
 /** Four Character Code type */
 typedef uint32_t MMAL_FOURCC_T;
 
+// OS abstraction
+#ifdef WIN32
+
+    #ifdef WIN32DLL_EXPORTS
+    #define WIN32DLL_API __declspec(dllexport)
+    #else
+    #define WIN32DLL_API __declspec(dllimport)
+    #endif
+
+#define MMALPRE WIN32DLL_API
+
+#else
+
+#define MMALPRE
+
+#endif
+
 /* @} */
 
 #ifdef __cplusplus

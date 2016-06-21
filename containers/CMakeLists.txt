@@ -11,11 +11,16 @@ include_directories (${SOURCE_DIR}/.. ${SOURCE_DIR}/../interface/vcos)
 # Needed for the container loader
 add_definitions(-DDL_PATH_PREFIX="${VMCS_PLUGIN_DIR}/")
 
-SET( GCC_COMPILER_FLAGS -Wall -g -O2 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wcast-qual -Wwrite-strings -Wundef )
-SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -Wextra )#-Wno-missing-field-initializers )
-SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -std=c99 -D_POSIX_C_SOURCE=200112L )
-SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -Wno-missing-field-initializers )
-SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -Wno-unused-value )
+if (WIN32)
+    SET( GCC_COMPILER_FLAGS -Wall -g -O2 )
+    SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -std=c99 -D_POSIX_C_SOURCE=200112L )
+else ()
+    SET( GCC_COMPILER_FLAGS -Wall -g -O2 -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wcast-qual -Wwrite-strings -Wundef )
+    SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -Wextra )#-Wno-missing-field-initializers )
+    SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -std=c99 -D_POSIX_C_SOURCE=200112L )
+    SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -Wno-missing-field-initializers )
+    SET( GCC_COMPILER_FLAGS ${GCC_COMPILER_FLAGS} -Wno-unused-value )
+endif ()
 
 add_definitions( ${GCC_COMPILER_FLAGS} )
 
@@ -64,7 +69,15 @@ set(packetizers_SRCS ${packetizers_SRCS} ${SOURCE_DIR}/mpgv/mpgv_packetizer.c)
 set(packetizers_SRCS ${packetizers_SRCS} ${SOURCE_DIR}/pcm/pcm_packetizer.c)
 set(packetizers_SRCS ${packetizers_SRCS} ${SOURCE_DIR}/h264/avc1_packetizer.c)
 
-add_library(containers ${LIBRARY_TYPE} ${core_SRCS} ${io_SRCS} ${net_SRCS} ${packetizers_SRCS})
+if (WIN32)
+    # Compile this as static for windows as container does not properly exports it's function
+    add_library(containers STATIC ${core_SRCS} ${io_SRCS} ${net_SRCS} ${packetizers_SRCS})
+    if (WIN32)
+        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DWIN32DLL_EXPORTS")
+    endif ()
+else ()
+    add_library(containers ${LIBRARY_TYPE} ${core_SRCS} ${io_SRCS} ${net_SRCS} ${packetizers_SRCS})
+endif ()
 target_link_libraries(containers vcos)
 install(TARGETS containers DESTINATION lib)
 

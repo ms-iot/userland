@@ -98,7 +98,7 @@ typedef struct MMAL_EVENT_PARAMETER_CHANGED_T
  * @param buffer buffer header containing the MMAL_EVENT_FORMAT_CHANGED event.
  * @return pointer to a MMAL_EVENT_FORMAT_CHANGED_T structure.
  */
-MMAL_EVENT_FORMAT_CHANGED_T *mmal_event_format_changed_get(MMAL_BUFFER_HEADER_T *buffer);
+MMALPRE MMAL_EVENT_FORMAT_CHANGED_T *mmal_event_format_changed_get(MMAL_BUFFER_HEADER_T *buffer);
 
 /* @} */
 

@@ -2,6 +2,10 @@
 # and install path
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
+if (WIN32)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -D_TIME_T_DEFINED")
+endif ()
+
 # Make sure the compiler can find the necessary include files
 include_directories (../..)
 

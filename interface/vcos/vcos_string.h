@@ -108,11 +108,18 @@ int vcos_strcmp(const char *s1, const char *s2) { return strcmp(s1,s2); }
 VCOS_STATIC_INLINE
 int vcos_strncmp(const char *cs, const char *ct, size_t count) { return strncmp(cs, ct, count); }
 
+// Do not use banned api for Windows
+#ifdef WIN32
+
+#else
+
 VCOS_STATIC_INLINE
 char *vcos_strcpy(char *dst, const char *src) { return strcpy(dst, src); }
 
 VCOS_STATIC_INLINE
 char *vcos_strncpy(char *dst, const char *src, size_t count) { return strncpy(dst, src, count); }
+
+#endif
 
 VCOS_STATIC_INLINE
 void *vcos_memcpy(void *dst, const void *src, size_t n) {  memcpy(dst, src, n);  return dst;  }

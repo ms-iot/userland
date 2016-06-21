@@ -31,9 +31,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
+#ifdef WIN32
+
+#else
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
+#endif
 
 
 #include <vmcs_sm_ioctl.h>

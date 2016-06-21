@@ -52,7 +52,7 @@ Type definitions
 /******************************************************************************
 Function prototypes
 ******************************************************************************/
-VC_CONTAINER_STATUS_T id3_metadata_reader_open( VC_CONTAINER_T * );
+VC_CONTAINER_PRE VC_CONTAINER_STATUS_T id3_metadata_reader_open( VC_CONTAINER_T * );
 
 /******************************************************************************
 Local Functions

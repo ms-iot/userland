@@ -62,34 +62,34 @@ typedef struct MMAL_PORT_PRIVATE_T
 
 /** Callback called by components when a \ref MMAL_BUFFER_HEADER_T needs to be sent back to the
  * user */
-void mmal_port_buffer_header_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer);
+MMALPRE void mmal_port_buffer_header_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer);
 
 /** Callback called by components when an event \ref MMAL_BUFFER_HEADER_T needs to be sent to the
  * user. Events differ from ordinary buffer headers because they originate from the component
  * and do not return data from the client to the component. */
-void mmal_port_event_send(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer);
+MMALPRE void mmal_port_event_send(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer);
 
 /** Allocate a port structure */
-MMAL_PORT_T *mmal_port_alloc(MMAL_COMPONENT_T *, MMAL_PORT_TYPE_T type, unsigned int extra_size);
+MMALPRE MMAL_PORT_T *mmal_port_alloc(MMAL_COMPONENT_T *, MMAL_PORT_TYPE_T type, unsigned int extra_size);
 /** Free a port structure */
-void mmal_port_free(MMAL_PORT_T *port);
+MMALPRE void mmal_port_free(MMAL_PORT_T *port);
 /** Allocate an array of ports */
-MMAL_PORT_T **mmal_ports_alloc(MMAL_COMPONENT_T *, unsigned int ports_num, MMAL_PORT_TYPE_T type,
+MMALPRE MMAL_PORT_T **mmal_ports_alloc(MMAL_COMPONENT_T *, unsigned int ports_num, MMAL_PORT_TYPE_T type,
                                unsigned int extra_size);
 /** Free an array of ports */
-void mmal_ports_free(MMAL_PORT_T **ports, unsigned int ports_num);
+MMALPRE void mmal_ports_free(MMAL_PORT_T **ports, unsigned int ports_num);
 
 /** Acquire a reference on a port */
-void mmal_port_acquire(MMAL_PORT_T *port);
+MMALPRE void mmal_port_acquire(MMAL_PORT_T *port);
 
 /** Release a reference on a port */
-MMAL_STATUS_T mmal_port_release(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_release(MMAL_PORT_T *port);
 
 /** Pause processing on a port */
-MMAL_STATUS_T mmal_port_pause(MMAL_PORT_T *port, MMAL_BOOL_T pause);
+MMALPRE MMAL_STATUS_T mmal_port_pause(MMAL_PORT_T *port, MMAL_BOOL_T pause);
 
 /** Returns whether a port is connected or not */
-MMAL_BOOL_T mmal_port_is_connected(MMAL_PORT_T *port);
+MMALPRE MMAL_BOOL_T mmal_port_is_connected(MMAL_PORT_T *port);
 
 /*****************************************************************************
  * Clock Port API
@@ -110,14 +110,14 @@ typedef void (*MMAL_PORT_CLOCK_EVENT_CB)(MMAL_PORT_T *port, const MMAL_CLOCK_EVE
  *
  * @return Pointer to new clock port or NULL on failure.
  */
-MMAL_PORT_T* mmal_port_clock_alloc(MMAL_COMPONENT_T *component, unsigned int extra_size,
+MMALPRE MMAL_PORT_T* mmal_port_clock_alloc(MMAL_COMPONENT_T *component, unsigned int extra_size,
                                    MMAL_PORT_CLOCK_EVENT_CB event_cb);
 
 /** Free a clock port.
  *
  * @param port       The clock port to free
  */
-void mmal_port_clock_free(MMAL_PORT_T *port);
+MMALPRE void mmal_port_clock_free(MMAL_PORT_T *port);
 
 /** Allocate an array of clock ports.
  *
@@ -128,7 +128,7 @@ void mmal_port_clock_free(MMAL_PORT_T *port);
  *
  * @return Pointer to a new array of clock ports or NULL on failure.
  */
-MMAL_PORT_T **mmal_ports_clock_alloc(MMAL_COMPONENT_T *component, unsigned int ports_num,
+MMALPRE MMAL_PORT_T **mmal_ports_clock_alloc(MMAL_COMPONENT_T *component, unsigned int ports_num,
                                      unsigned int extra_size, MMAL_PORT_CLOCK_EVENT_CB event_cb);
 
 /** Free an array of clock ports.
@@ -136,7 +136,7 @@ MMAL_PORT_T **mmal_ports_clock_alloc(MMAL_COMPONENT_T *component, unsigned int p
  * @param ports      The clock ports to free
  * @param ports_num  Number of ports to free
  */
-void mmal_ports_clock_free(MMAL_PORT_T **ports, unsigned int ports_num);
+MMALPRE void mmal_ports_clock_free(MMAL_PORT_T **ports, unsigned int ports_num);
 
 /** Definition of a clock port request callback.
  * This is invoked when the media-time requested by the client is reached.
@@ -157,7 +157,7 @@ typedef void (*MMAL_PORT_CLOCK_REQUEST_CB)(MMAL_PORT_T *port, int64_t media_time
  *
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_clock_request_add(MMAL_PORT_T *port, int64_t media_time,
+MMALPRE MMAL_STATUS_T mmal_port_clock_request_add(MMAL_PORT_T *port, int64_t media_time,
                                           MMAL_PORT_CLOCK_REQUEST_CB cb, void *cb_data);
 
 /** Remove all previously registered clock port requests.
@@ -166,45 +166,45 @@ MMAL_STATUS_T mmal_port_clock_request_add(MMAL_PORT_T *port, int64_t media_time,
  *
  * @return MMAL_SUCCESS on success
  */
-MMAL_STATUS_T mmal_port_clock_request_flush(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_clock_request_flush(MMAL_PORT_T *port);
 
 /** Get/set the clock port's reference state */
-MMAL_STATUS_T mmal_port_clock_reference_set(MMAL_PORT_T *port, MMAL_BOOL_T reference);
-MMAL_BOOL_T mmal_port_clock_reference_get(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_clock_reference_set(MMAL_PORT_T *port, MMAL_BOOL_T reference);
+MMALPRE MMAL_BOOL_T mmal_port_clock_reference_get(MMAL_PORT_T *port);
 
 /** Get/set the clock port's active state */
-MMAL_STATUS_T mmal_port_clock_active_set(MMAL_PORT_T *port, MMAL_BOOL_T active);
-MMAL_BOOL_T mmal_port_clock_active_get(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_clock_active_set(MMAL_PORT_T *port, MMAL_BOOL_T active);
+MMALPRE MMAL_BOOL_T mmal_port_clock_active_get(MMAL_PORT_T *port);
 
 /** Get/set the clock port's scale */
-MMAL_STATUS_T mmal_port_clock_scale_set(MMAL_PORT_T *port, MMAL_RATIONAL_T scale);
-MMAL_RATIONAL_T mmal_port_clock_scale_get(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_clock_scale_set(MMAL_PORT_T *port, MMAL_RATIONAL_T scale);
+MMALPRE MMAL_RATIONAL_T mmal_port_clock_scale_get(MMAL_PORT_T *port);
 
 /** Get/set the clock port's media-time */
-MMAL_STATUS_T mmal_port_clock_media_time_set(MMAL_PORT_T *port, int64_t media_time);
-int64_t mmal_port_clock_media_time_get(MMAL_PORT_T *port);
+MMALPRE MMAL_STATUS_T mmal_port_clock_media_time_set(MMAL_PORT_T *port, int64_t media_time);
+MMALPRE int64_t mmal_port_clock_media_time_get(MMAL_PORT_T *port);
 
 /** Get/set the clock port's update threshold */
-MMAL_STATUS_T mmal_port_clock_update_threshold_set(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_clock_update_threshold_set(MMAL_PORT_T *port,
                                                    const MMAL_CLOCK_UPDATE_THRESHOLD_T *threshold);
-MMAL_STATUS_T mmal_port_clock_update_threshold_get(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_clock_update_threshold_get(MMAL_PORT_T *port,
                                                    MMAL_CLOCK_UPDATE_THRESHOLD_T *threshold);
 
 /** Get/set the clock port's discontinuity threshold */
-MMAL_STATUS_T mmal_port_clock_discont_threshold_set(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_clock_discont_threshold_set(MMAL_PORT_T *port,
                                                     const MMAL_CLOCK_DISCONT_THRESHOLD_T *threshold);
-MMAL_STATUS_T mmal_port_clock_discont_threshold_get(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_clock_discont_threshold_get(MMAL_PORT_T *port,
                                                     MMAL_CLOCK_DISCONT_THRESHOLD_T *threshold);
 
 /** Get/set the clock port's request threshold */
-MMAL_STATUS_T mmal_port_clock_request_threshold_set(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_clock_request_threshold_set(MMAL_PORT_T *port,
                                                     const MMAL_CLOCK_REQUEST_THRESHOLD_T *threshold);
-MMAL_STATUS_T mmal_port_clock_request_threshold_get(MMAL_PORT_T *port,
+MMALPRE MMAL_STATUS_T mmal_port_clock_request_threshold_get(MMAL_PORT_T *port,
                                                     MMAL_CLOCK_REQUEST_THRESHOLD_T *threshold);
 
 /** Provide information regarding a buffer received on the component's input/output port */
-void mmal_port_clock_input_buffer_info(MMAL_PORT_T *port, const MMAL_CLOCK_BUFFER_INFO_T *info);
-void mmal_port_clock_output_buffer_info(MMAL_PORT_T *port, const MMAL_CLOCK_BUFFER_INFO_T *info);
+MMALPRE void mmal_port_clock_input_buffer_info(MMAL_PORT_T *port, const MMAL_CLOCK_BUFFER_INFO_T *info);
+MMALPRE void mmal_port_clock_output_buffer_info(MMAL_PORT_T *port, const MMAL_CLOCK_BUFFER_INFO_T *info);
 
 #ifdef __cplusplus
 }

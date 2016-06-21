@@ -13,8 +13,14 @@ include_directories (
    ${VIDEOCORE_ROOT}/host_applications/linux/libs/sm
 )
 
+if (WIN32)
+add_definitions(-D__GNU_LIBRARY__)
+add_executable(vcsmem smem.c)
+target_link_libraries(vcsmem vcos vcsm getopt)
+else ()
 add_executable(vcsmem smem.c)
 target_link_libraries(vcsmem vcos vcsm vchostif)
+endif ()
 
 install(TARGETS vcsmem RUNTIME DESTINATION bin)
 

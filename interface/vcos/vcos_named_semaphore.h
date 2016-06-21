@@ -103,6 +103,7 @@ void vcos_named_semaphore_post(VCOS_NAMED_SEMAPHORE_T *sem);
   *
   * @param sem Semaphore to wait on
   */
+VCOS_INLINE_DECL
 void vcos_named_semaphore_delete(VCOS_NAMED_SEMAPHORE_T *sem);
 
 

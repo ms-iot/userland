@@ -433,6 +433,7 @@ int main( int argc, char **argv )
    {
       start_monitor();
       
+      vcos_log_info("Test completed, press ctrl+c to exit.");
       vcos_event_wait( &quit_event );
       vcos_event_delete( &quit_event );
    }

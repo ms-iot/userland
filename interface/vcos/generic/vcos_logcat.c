@@ -287,10 +287,18 @@ static int read_tok(char *tok, size_t toklen, const char **pstr, char sep)
    while (str[0] && isspace((int)(str[0])))
       str++;
 
+#ifdef WIN32_KERN
+   // TODO : Fix isalnum for WIN32 kernel
+   while ((ch = *str) != '\0' &&
+          ch != sep &&
+          ((ch == '_')) &&
+          n != toklen-1)
+#else
    while ((ch = *str) != '\0' &&
           ch != sep &&
           (isalnum((int)ch) || (ch == '_')) &&
           n != toklen-1)
+#endif
    {
       tok[n++] = ch;
       str++;

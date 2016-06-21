@@ -79,7 +79,7 @@ typedef void (*mmal_pool_allocator_free_t)(void *context, void *mem);
  *                     each of the buffer headers.
  * @return Pointer to the newly created pool or NULL on failure.
  */
-MMAL_POOL_T *mmal_pool_create(unsigned int headers, uint32_t payload_size);
+MMALPRE MMAL_POOL_T *mmal_pool_create(unsigned int headers, uint32_t payload_size);
 
 /** Create a pool of MMAL_BUFFER_HEADER_T.
  * After allocation, all allocated buffer headers will have been added to the queue.
@@ -98,7 +98,7 @@ MMAL_POOL_T *mmal_pool_create(unsigned int headers, uint32_t payload_size);
  *
  * @return Pointer to the newly created pool or NULL on failure.
  */
-MMAL_POOL_T *mmal_pool_create_with_allocator(unsigned int headers, uint32_t payload_size,
+MMALPRE MMAL_POOL_T *mmal_pool_create_with_allocator(unsigned int headers, uint32_t payload_size,
                               void *allocator_context, mmal_pool_allocator_alloc_t allocator_alloc,
                               mmal_pool_allocator_free_t allocator_free);
 
@@ -112,7 +112,7 @@ MMAL_POOL_T *mmal_pool_create_with_allocator(unsigned int headers, uint32_t payl
  *
  * @param pool  Pointer to a pool
  */
-void mmal_pool_destroy(MMAL_POOL_T *pool);
+MMALPRE void mmal_pool_destroy(MMAL_POOL_T *pool);
 
 /** Resize a pool of MMAL_BUFFER_HEADER_T.
  * This allows modifying either the number of allocated buffers, the payload size or both at the
@@ -126,7 +126,7 @@ void mmal_pool_destroy(MMAL_POOL_T *pool);
  *                     If this is set to 0, all payload buffers shall be released.
  * @return MMAL_SUCCESS or an error on failure.
  */
-MMAL_STATUS_T mmal_pool_resize(MMAL_POOL_T *pool, unsigned int headers, uint32_t payload_size);
+MMALPRE MMAL_STATUS_T mmal_pool_resize(MMAL_POOL_T *pool, unsigned int headers, uint32_t payload_size);
 
 /** Definition of the callback used by a pool to signal back to the user that a buffer header
  * has been released back to the pool.
@@ -146,7 +146,7 @@ typedef MMAL_BOOL_T (*MMAL_POOL_BH_CB_T)(MMAL_POOL_T *pool, MMAL_BUFFER_HEADER_T
  * @param cb       Callback function
  * @param userdata User specific data which will be passed with each callback
  */
-void mmal_pool_callback_set(MMAL_POOL_T *pool, MMAL_POOL_BH_CB_T cb, void *userdata);
+MMALPRE void mmal_pool_callback_set(MMAL_POOL_T *pool, MMAL_POOL_BH_CB_T cb, void *userdata);
 
 /** Set a pre-release callback for all buffer headers in the pool.
  * Each time a buffer header is about to be released to the pool, the callback
@@ -156,7 +156,7 @@ void mmal_pool_callback_set(MMAL_POOL_T *pool, MMAL_POOL_BH_CB_T cb, void *userd
  * @param cb       Pre-release callback function
  * @param userdata User-specific data passed back with each callback
  */
-void mmal_pool_pre_release_callback_set(MMAL_POOL_T *pool, MMAL_BH_PRE_RELEASE_CB_T cb, void *userdata);
+MMALPRE void mmal_pool_pre_release_callback_set(MMAL_POOL_T *pool, MMAL_BH_PRE_RELEASE_CB_T cb, void *userdata);
 
 /* @} */
 

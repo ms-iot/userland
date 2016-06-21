@@ -144,6 +144,9 @@ typedef void (*VCHI_CALLBACK_T)( void *callback_param, //my service local param
 typedef struct vchi_msg_vector {
    const void *vec_base;
    int32_t vec_len;
+#ifdef WIN32
+   void *driver_vec_base_handle;
+#endif
 } VCHI_MSG_VECTOR_T;
 
 // Opaque type for a connection API

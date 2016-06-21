@@ -54,6 +54,13 @@ typedef struct
 } MMAL_COMPONENT_CORE_PRIVATE_T;
 
 /*****************************************************************************/
+#ifdef WIN32
+
+HINSTANCE mmal_vc_client_instance = NULL;
+HINSTANCE mmal_components_instance = NULL;
+typedef FARPROC register_component_type;
+
+#endif
 static void mmal_core_init(void);
 static void mmal_core_deinit(void);
 
@@ -680,6 +687,91 @@ static void mmal_core_init(void)
       return;
    }
 
+#ifdef WIN32
+   /* Manually load and initialize mmal components. As more component are ported over to Window
+    * a DllMain entry point could be created to include component initialization */
+   register_component_type loader;
+   mmal_vc_client_instance = LoadLibrary("mmal_vc_client.dll");
+   if (mmal_vc_client_instance)
+   {
+       loader = GetProcAddress(mmal_vc_client_instance, "mmal_register_component_videocore");
+       if (loader)
+       {
+           loader();
+       }
+   }
+
+   mmal_components_instance = LoadLibrary("mmal_components.dll");
+   if (mmal_components_instance)
+   {
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_container_reader");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_container_writer");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_aggregator");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_artificial_camera");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_clock");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_copy");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_null_sink");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_passthrough");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_scheduler");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_spdif");
+       if (loader)
+       {
+           loader();
+       }
+
+       loader = GetProcAddress(mmal_components_instance, "mmal_register_component_splitter");
+       if (loader)
+       {
+           loader();
+       }
+   }
+#endif
+
    mmal_logging_init();
    vcos_mutex_unlock(&mmal_core_lock);
 }
@@ -692,6 +784,14 @@ static void mmal_core_deinit(void)
       vcos_mutex_unlock(&mmal_core_lock);
       return;
    }
+
+#ifdef WIN32
+   if (mmal_vc_client_instance)  
+       FreeLibrary(mmal_vc_client_instance);
+
+   if (mmal_components_instance)
+       FreeLibrary(mmal_components_instance);
+#endif
 
    mmal_logging_deinit();
    vcos_mutex_unlock(&mmal_core_lock);

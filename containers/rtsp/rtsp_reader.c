@@ -190,7 +190,7 @@ Function prototypes
 ******************************************************************************/
 static int rtsp_header_comparator(const RTSP_HEADER_T *first, const RTSP_HEADER_T *second);
 
-VC_CONTAINER_STATUS_T rtsp_reader_open( VC_CONTAINER_T * );
+VC_CONTAINER_PRE VC_CONTAINER_STATUS_T rtsp_reader_open( VC_CONTAINER_T * );
 
 /******************************************************************************
 Local Functions

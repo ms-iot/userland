@@ -30,14 +30,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "interface/vcos/vcos.h"
 
-int16_t  vchi_readbuf_int16 ( const void *ptr );
-uint16_t vchi_readbuf_uint16( const void *ptr );
-uint32_t vchi_readbuf_uint32( const void *ptr );
-vcos_fourcc_t vchi_readbuf_fourcc( const void *ptr );
+VCHIPRE_ int16_t  vchi_readbuf_int16 ( const void *ptr );
+VCHIPRE_ uint16_t vchi_readbuf_uint16( const void *ptr );
+VCHIPRE_ uint32_t vchi_readbuf_uint32( const void *ptr );
+VCHIPRE_ vcos_fourcc_t vchi_readbuf_fourcc( const void *ptr );
 
-void vchi_writebuf_uint16( void *ptr, uint16_t value );
-void vchi_writebuf_uint32( void *ptr, uint32_t value );
-void vchi_writebuf_fourcc( void *ptr, vcos_fourcc_t value );
+VCHIPRE_ void vchi_writebuf_uint16( void *ptr, uint16_t value );
+VCHIPRE_ void vchi_writebuf_uint32( void *ptr, uint32_t value );
+VCHIPRE_ void vchi_writebuf_fourcc( void *ptr, vcos_fourcc_t value );
 
 #endif /* _VCHI_ENDIAN_H_ */
 

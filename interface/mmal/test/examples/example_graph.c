@@ -46,7 +46,10 @@ int main(int argc, char **argv)
       return -1;
    }
 
+#ifndef WIN32
+   // TODO verify that we dont really need to call bcm_host_init
    bcm_host_init();
+#endif
 
    /* Create the graph */
    status = mmal_graph_create(&graph, 0);
@@ -77,7 +80,7 @@ int main(int argc, char **argv)
    status = mmal_graph_enable(graph, NULL, NULL);
    CHECK_STATUS(status, "failed to enable graph");
 
-   sleep(5);
+   vcos_sleep(5);
 
    /* Stop everything */
    fprintf(stderr, "stop playback\n");

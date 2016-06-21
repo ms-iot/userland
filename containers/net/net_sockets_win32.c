@@ -25,6 +25,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef WIN32
+#include <WinSock2.h>
+#endif
+
 #include "net_sockets.h"
 #include "net_sockets_priv.h"
 #include "containers/core/containers_common.h"

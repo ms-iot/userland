@@ -28,8 +28,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _NET_SOCKETS_WIN32_H_
 #define _NET_SOCKETS_WIN32_H_
 
+// Commenting out since headers are already included
+#if 0
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#endif
 
 typedef SOCKET SOCKET_T;
 typedef int SOCKADDR_LEN_T;

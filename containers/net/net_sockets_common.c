@@ -28,6 +28,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef WIN32
+#include <winsock2.h>
+#include <Ws2ipdef.h>
+#include <WS2tcpip.h>
+#endif
+
 #include "containers/containers.h"
 #include "containers/core/containers_common.h"
 #include "containers/core/containers_logging.h"

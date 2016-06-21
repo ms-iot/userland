@@ -68,19 +68,19 @@ typedef struct MMAL_BUFFER_HEADER_PRIVATE_T
 } MMAL_BUFFER_HEADER_PRIVATE_T;
 
 /** Get the size in bytes of a fully initialised MMAL_BUFFER_HEADER_T */
-unsigned int mmal_buffer_header_size(MMAL_BUFFER_HEADER_T *header);
+MMALPRE unsigned int mmal_buffer_header_size(MMAL_BUFFER_HEADER_T *header);
 
 /** Initialise a MMAL_BUFFER_HEADER_T */
-MMAL_BUFFER_HEADER_T *mmal_buffer_header_initialise(void *mem, unsigned int length);
+MMALPRE MMAL_BUFFER_HEADER_T *mmal_buffer_header_initialise(void *mem, unsigned int length);
 
 /** Return a pointer to the area reserved for the driver.
   */
-MMAL_DRIVER_BUFFER_T *mmal_buffer_header_driver_data(MMAL_BUFFER_HEADER_T *);
+MMALPRE MMAL_DRIVER_BUFFER_T *mmal_buffer_header_driver_data(MMAL_BUFFER_HEADER_T *);
 
 /** Return a pointer to a referenced buffer header.
  * It is the caller's responsibility to ensure that the reference is still
  * valid when using it.
  */
-MMAL_BUFFER_HEADER_T *mmal_buffer_header_reference(MMAL_BUFFER_HEADER_T *header);
+MMALPRE MMAL_BUFFER_HEADER_T *mmal_buffer_header_reference(MMAL_BUFFER_HEADER_T *header);
 
 #endif /* MMAL_BUFFER_PRIVATE_H */

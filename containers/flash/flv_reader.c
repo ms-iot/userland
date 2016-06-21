@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef CONTAINER_HELPER_LOG_INDENT
 #define CONTAINER_HELPER_LOG_INDENT(a) 0
 
-VC_CONTAINER_STATUS_T flv_reader_open( VC_CONTAINER_T *p_ctx );
+VC_CONTAINER_PRE VC_CONTAINER_STATUS_T flv_reader_open( VC_CONTAINER_T *p_ctx );
 
 /******************************************************************************
 Defines.
