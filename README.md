@@ -44,3 +44,5 @@ Latest version of Windows CMAKE
  interface is supported. 
  
  For more information about Windows 10 IoT Core, see our online documentation [here](http://windowsondevices.com)
+
+ This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
