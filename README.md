@@ -13,7 +13,7 @@ The original userland repository uses CMAKE a cross platform build tool that is
 compiler independent. The following are tools required to compile on Windows
 IoT CORE.
 
-##Requirement
+## Requirement
 
 Latest Microsoft Visual Studio
   (https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx)
@@ -21,7 +21,7 @@ Latest Microsoft Visual Studio
 Latest version of Windows CMAKE
   (https://cmake.org/download/.)
 
-##Compilation Steps
+## Compilation Steps
 
 1) Run "GenerateVSproject.bat" batch file. This will generate all project and
    solution in the "build_win32" folder.
@@ -32,12 +32,12 @@ Latest version of Windows CMAKE
    (2) build the ALL_BUILD project.
    
  
-##Notes
+## Notes
  
- Not all components are ported to Windows IoT Core, TODO comment can be found
+ Not all components are ported to Windows IoT Core, TODO comments can be found
  in various CMAKELists.txt file documenting what is component is omitted.
  
- There are substantial warnings during compilation that is not fixed to minimize
+ There are substantial warnings during compilation that are not fixed to minimize
  code difference from the original repository.
  
  The OS abstraction layer (VCOS) is not complete for Windows, only the minimum required
